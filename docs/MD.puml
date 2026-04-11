@@ -28,10 +28,10 @@ Aircraft o--> AircraftStatus
 Aircraft --> AircraftModel : "has an"
 
 class AircraftStatus <<enum>> {
-    - ACTIVE: int
-    - IN_FLIGHT: int
-    - INACTIVE: int
-    - UNDER_MAINTENANCE: int
+    - active: int
+    - in_flight: int
+    - inactive: int
+    - under_maintenance: int
 }
 }
 
@@ -60,9 +60,9 @@ package "Airport Aggregate" {
     }
 
     class AirportStatus <<enum>> {
-        - OPERATIONAL: int
-        - CLOSED: int
-        - UNDER_MAINTENANCE: int
+        - operational: int
+        - closed: int
+        - under_maintenance: int
     }
 }
 
@@ -80,11 +80,11 @@ Flight o--> FlightStatus
 
 
 class FlightStatus <<enum>> {
-    - SCHEDULED: int
-    - OCCURRING: int
-    - DELAYED: int
-    - COMPLETED: int
-    - CANCELED: int
+    - scheduled: int
+    - flying: int
+    - delayed: int
+    - completed: int
+    - canceled: int
 }
 }
 
@@ -92,9 +92,9 @@ package "Route Aggregate"{
 class Route <<entity>> <<root>>{
     - route_id: String
     - active: boolean
-    - estimated_flight_minutes: int
-    - min_range_required: float
-    - min_capacity_required: int
+    - estimated_flight_time: int
+    - min_range: float
+    - min_capacity: int
 }
 }
 
@@ -130,7 +130,7 @@ MaintenanceRecord --> MaintenanceTemplate : "built on"
 Airport "1" <-- "N" AircraftModel : "Confirmed by   "
 Route --> "2" Airport : "Origin / Destination"
 MaintenanceRecord --> Aircraft : "Exected in"
-Flight --> Route : "follows"
+Flight --> Route : "does"
 Flight --> Aircraft : "executed by"
 
 @enduml
