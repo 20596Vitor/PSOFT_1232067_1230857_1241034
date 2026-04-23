@@ -17,7 +17,7 @@ class AircraftModel <<entity>> {
 }
 
 class Aircraft <<entity>> <<root>> {
-    - registration_ID: String
+    - registration_ ID: String
     - manufacturing_date: Date
     - seating_capacity: int
     - last_maintenance: Date
@@ -41,12 +41,13 @@ package "Airport Aggregate" {
         - name: String
         - city: String
         - country: String
-        - runway_information: List<String>
+        - timezone: Date
+        - coordinates: String
     }
 
     Airport o--> "N" RunwayInfo
     Airport o--> AirportStatus
-    Airport o--> "N" ContactInfo
+    Airport "1" o--> "N" ContactInfo
 
     class ContactInfo <<value object>> {
         - type: String
@@ -73,7 +74,7 @@ class Flight <<entity>> <<root>> {
     - flight_id: String
     - scheduled_datetime: Date
     - delayed_hours: float
-    - flight_duration: Date
+    - flight_duration: float
 }
 
 Flight o--> FlightStatus
@@ -96,10 +97,16 @@ class Route <<entity>> <<root>>{
     - min_range: float
     - min_capacity: int
 }
+
+'duvida para o professor, há necessidade de ter um routeRecord??'
+
+class RouteRecord <<value object>>{
+
+}
+
 }
 
 package "Maintenance Aggregate" {
-MaintenanceRecord o--> "N" MaintenanceParts : "uses"
 class MaintenanceRecord <<entity>> <<root>> {
     - start_date: Date
     - expected_duration_hours: float
@@ -107,8 +114,12 @@ class MaintenanceRecord <<entity>> <<root>> {
     - check_list_status: String
     - notes: String
 }
+}
 
-class MaintenanceParts <<entity>>{
+
+package "Inventory Aggregate"{
+
+class MaintenanceParts <<entity>> <<root>>  {
     - partNumber: int
     - stockQuantity: int
     - name: String
@@ -120,16 +131,18 @@ class MaintenanceParts <<entity>>{
 package "MaintenanceTemplate Aggregate"{
 class MaintenanceTemplate <<entity>> <<root>> {
     - template_name: String
+    - template_type: String
     - aircraft_model: String
     - checklist: List<String>
     - scheduled_maintenance: Date
 }
 
 }
+MaintenanceParts "  N"  <- "1" MaintenanceRecord : "    Uses   "
 MaintenanceRecord --> MaintenanceTemplate : "built on"
-Airport "1" <-- "N" AircraftModel : "Confirmed by   "
+Airport "1" --> "N" AircraftModel : "Certified by   "
 Route --> "2" Airport : "Origin / Destination"
-MaintenanceRecord --> Aircraft : "Exected in"
+MaintenanceRecord --> Aircraft : "Executed in"
 Flight --> Route : "does"
 Flight --> Aircraft : "executed by"
 
