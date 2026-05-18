@@ -15,6 +15,7 @@ package "Airport Aggregate"{
            - airportLocation: AirportLocation
            - airportStatus: AirportStatus
            - runwayInfo: List<RunwayInfo>
+           - images: List<Images>
            ---
            +airport(name, timeZone, coordinates, airportIdentifier, airportType, airportLocation, airportStatus, runwayInfo)
     }
