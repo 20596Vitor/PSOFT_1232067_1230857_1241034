@@ -1,0 +1,107 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title Add Airplane Certification to Airport: Domain Model
+
+package "Airport Aggregate" {
+    class Airport <<entity>> <<root>> {
+        - name: String
+        - images: List<String>
+    }
+    Airport o--> LocationIdentifier
+    Airport o--> AirportType
+    Airport o--> Coordinates
+    Airport o--> AirportLocation
+    Airport o--> TimeZone
+    Airport o--> OperationalHours
+    Airport o--> AirportStatus
+    Airport o--> "N" RunwayInfo
+    Airport o--> "N" ContactInfo
+    Airport o--> "N" AirportTerminal
+
+    Airport o--> "N" AirportService
+
+    class AirportLocation <<value object>> {
+        - city: String
+        - country: String
+        - region: String
+    }
+
+    class AirportTerminal <<value object>> {
+        - terminal: String
+    }
+    class AirportService <<value object>> {
+        - service: String
+    }
+
+    class AirportType <<entity>> {
+        - name: String
+        - description: String
+    }
+    class LocationIdentifier <<value object>> {
+        - iata_code: String
+    }
+
+    class TimeZone <<entity>> {
+        - abbreviation: String
+        - utc_minutes: int
+        - gmt_minutes: int
+    }
+
+    class OperationalHours <<value object>> {
+        - opening_hours: int
+        - closing_hours: int
+    }
+
+    class ContactInfo <<value object>> {
+        - type: String
+        - contact: String
+        - description: String
+    }
+    ContactInfo o--> ContactInfoType
+    class ContactInfoType <<enum>> {
+        - EMAIL: int
+        - PHONE_NUMBER: int
+        - WEBSITE: int
+        - MAILING_ADDRESS: int
+    }
+
+    class Coordinates <<value object>> {
+        - longitude: double
+        - longitude_direction: char
+        - latitude: double
+        - latitude_direction: char
+    }
+
+    class RunwayInfo <<value object>> {
+        - name: String
+        - length: double
+    }
+    RunwayInfo o--> Orientation
+
+    class Orientation <<value object>> {
+        - orientation: String
+    }
+
+    class AirportStatus <<enum>> {
+        - OPERATIONAL: int
+        - CLOSED: int
+        - UNDER_MAINTENANCE: int
+    }
+}
+
+package "Aircraft Model Aggregate" {
+    class AircraftModel <<entity>> <<root>> {
+        - name: String
+        - max_range: double
+        - fuel_capacity: double
+        - cruising_speed: double
+        - feature: Set<String>
+    }
+}
+Airport "1" --> "0..*" AircraftModel : certifies
+
+@enduml

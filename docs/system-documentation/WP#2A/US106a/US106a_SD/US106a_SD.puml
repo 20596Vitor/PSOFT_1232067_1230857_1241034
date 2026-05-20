@@ -1,0 +1,55 @@
+@startuml
+title Add Airplane Certification to Airport - Sequence Diagram
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant AirportController
+participant CertifyAircraftUseCase <<@UseCase>>
+participant CertifyAircraftService <<Domain Service>>
+database AirportRepository
+database AircraftModelRepository
+
+BO -> Ctrl : POST /airports\n{ name, iataCode, timezone, coordinates, location, type, runways }
+
+AirportController -> AirportController : extract username from JWT
+
+alt User has authorization
+    AirportController -> CertifyAircraftUseCase : execute(iata_code, name)
+
+
+    CertifyAircraftUseCase -> CertifyAircraftService : certifyAircraftModel(iata_code, name)
+
+    CertifyAircraftService -> AirportRepository : findByIataCode(iata_code)
+    return airportOptional
+
+    CertifyAircraftService -> AircraftModelRepository : findByName(name)
+    return aircraftOptional
+
+    alt Both entities exist (Present)
+        CertifyAircraftService -> CertifyAircraftService : airport = airportOptional.get()
+        CertifyAircraftService -> CertifyAircraftService : aircraft = aircraftOptional.get()
+
+
+        CertifyAircraftService -> Airport : addCertification(aircraft)
+        return
+
+        CertifyAircraftService -> AirportRepository : save(airport)
+        return airport_object(persisted)
+
+        return airport_object
+        return airport_object
+    AirportController --> BO : 200 OK\n{message: Success}
+
+    else Airport or Model does not exist
+        CertifyAircraftService --> CertifyAircraftUseCase : throw EntityNotFoundException
+        deactivate CertifyAircraftService
+        CertifyAircraftUseCase --> AirportController : throw ResponseStatusException(404, "Not Found")
+        deactivate CertifyAircraftUseCase
+        AirportController --> BO : 404 Not Found\n{ message: "Airport or Aircraft Model not found" }
+    end
+
+else User does not have authorization
+    AirportController --> BO : 403 Forbidden\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

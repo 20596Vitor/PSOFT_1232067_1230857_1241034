@@ -1,0 +1,51 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Add Airplane certification to Airport - Class Diagram
+
+package "Airport Aggregate" {
+    class Airport <<root>> {
+        - certifiedAircrafts : Set<AircraftModel>
+        ---
+        + addCertification(aircraftModel: AircraftModel)
+    }
+
+    interface AirportRepository {
+        ---
+        + findByIataCode(iataCode : IATAcode) : Optional<Airport>
+        + save(airport: Airport) : Airport
+    }
+}
+
+package "Aircraft Aggregate" {
+    class AircraftModel <<root>> {
+        - aircraftName : String
+        ---
+        + getName() : String
+    }
+
+    interface AircraftModelRepository {
+        ---
+        + findByName(name: String) : Optional<AircraftModel>
+    }
+}
+
+package "Application / Services" {
+    class AddCertificationUseCase <<@UseCase>> {
+        + execute(iataCode, aircraftName)
+    }
+
+    class AddCertificationService <<Domain Service>> {
+        ---
+        + addAirplaneCertification(iataCode, aircraftName)
+    }
+}
+
+
+AddCertificationUseCase ..> AddCertificationService : delegates to >
+AddCertificationService ..> AirportRepository : uses >
+AddCertificationService ..> AircraftModelRepository : uses >
+
+Airport "1" --> "N" AircraftModel : certified for >
+
+@enduml

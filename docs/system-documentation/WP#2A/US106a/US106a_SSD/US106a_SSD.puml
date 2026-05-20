@@ -1,0 +1,28 @@
+@startuml
+autonumber
+title US106a - Add Airplane Certification to Airport — System Sequence Diagram
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant ":System" as Sys
+
+BO -> Sys : POST /airports/{iataCode}/certifications\n{ aircraftModelName }
+
+alt User has authorization
+
+    alt Both Airport and Aircraft Model exist in the system
+        Sys --> BO : 200 OK\n{ message: "Certification added successfully" }
+
+    else Airport or Aircraft Model does NOT exist
+        Sys --> BO : 404 Not Found\n{ message: "Airport or Aircraft Model not found" }
+
+    else Airport is already certified for this Model
+        Sys --> BO : 409 Conflict\n{ message: "Airport is already certified for this model" }
+    end
+
+else User does not have authorization
+    Sys --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml
