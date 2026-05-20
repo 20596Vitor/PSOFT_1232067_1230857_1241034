@@ -1,0 +1,52 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Register an airport - Class Diagram
+
+package "Airport Aggregate"{
+
+    class Airport <<root>>{
+           - name: String
+           - contact: String
+           - timeZone: Timezone
+           - coordinates: Coordinates
+           - airportIdentifier: IATAcode
+           - airportType: AirportType
+           - airportLocation: AirportLocation
+           - airportStatus: AirportStatus
+           - runwayInfo: List<RunwayInfo>
+           - images: List<Images>
+           ---
+           +airport(name, timeZone, coordinates, airportIdentifier, airportType, airportLocation, airportStatus, runwayInfo)
+    }
+
+    class RunwayInfo <<entity>> {
+           - name: String
+           - orientation: String
+           - length: Float
+    }
+
+    enum AirportStatus <<enum>>{
+           OPERATIONAL
+           CLOSED
+           UNDER_MAINTENANCE
+    }
+
+    class RegisterAirportService <<Domain Service>>{
+           ---
+           +airport: RegisterAirport(String name, String contact, Timezone timeZone, Coordinate coordinates, airportIdentifier IATAcode, AirportType airportType, AirportStatus airportType, runwayInfo)
+    }
+
+   interface AirportRepository{
+           ---
+           + boolean availability(airportStatus)
+           + Airport save(Airport)
+   }
+
+    Airport "1 " *--> "N" RunwayInfo : contains >
+    Airport "1" --> "1  " AirportStatus : has >
+    RegisterAirportService ..> Airport : creates >
+    RegisterAirportService ..> AirportRepository : uses >
+}
+
+@enduml

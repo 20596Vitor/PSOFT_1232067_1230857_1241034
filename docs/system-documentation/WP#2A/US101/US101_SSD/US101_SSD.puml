@@ -1,0 +1,17 @@
+@startuml
+autonumber
+
+title US101 - Register an Aircraft Model — Simplified Sequence Diagram
+actor "Backoffice Operator" as BO
+participant ":System" as Sys
+
+BO -> Sys: Register an aircraft model
+Sys --> BO: Request details \n(manufacturer, model name, max seating capacity, fuel capacity, max range, cruising speed)
+
+BO -> Sys: Inserts requested data
+Sys --> BO: Shows data inserted to confirm
+
+BO -> Sys: Confirms data inserted
+Sys --> BO: Registers the aircraft model and displays a confirmation message
+
+@enduml
