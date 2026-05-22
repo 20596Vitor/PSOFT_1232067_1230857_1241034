@@ -1,0 +1,32 @@
+@startuml
+title View aircraft details - Class Diagram
+
+package "Aircraft Aggregate"{
+
+    class Aircraft <<root>>{
+           - registration_id: String
+           - manufacturing_date: Date
+           - seating_capacity: int
+           - status: AircraftStatus
+           - last_maintenance: Date
+           - days_since_last_maintenance: int
+           ---
+           +getRegistrationId(): String
+           +getDetails(): Map
+    }
+
+    class ViewAircraftService <<Domain Service>>{
+           ---
+           +getAircraftByRegistrationNumber(String registrationNumber): Aircraft
+    }
+
+   interface AircraftRepository{
+           ---
+           + Optional<Aircraft> findById(String registrationNumber)
+   }
+
+    ViewAircraftService ..> Aircraft : returns >
+    ViewAircraftService ..> AircraftRepository : uses >
+}
+
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+title US104 - Search for Aircraft — Simplified Sequence Diagram
+actor "Air Transport Company Collaborator (ATCC)" as ATCC
+participant ":System" as Sys
+
+ATCC -> Sys: Requests to search for aircrafts (providing model, status or manufacturing year)
+Sys --> ATCC: Displays a list of aircraft matching the criteria
+
+@enduml
