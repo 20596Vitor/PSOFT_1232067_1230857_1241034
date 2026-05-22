@@ -1,4 +1,4 @@
-package org.example.model;
+package org.example.user;
 
 import jakarta.persistence.*;
 
@@ -10,9 +10,8 @@ public class Admin {
 
     private String email;
     private String password;
-    private String role; // Ex: "ADMIN", "OPERATOR"
+    private String role;
 
-    // Construtores
     public Admin() {}
 
     public Admin(String email, String password, String role) {

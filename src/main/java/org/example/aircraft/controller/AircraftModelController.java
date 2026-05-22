@@ -1,4 +1,4 @@
-package org.example.aircraft.controllers;
+package org.example.aircraft.controller;
 
 import org.example.aircraft.domain.AircraftModel;
 import org.example.aircraft.services.AircraftModelService;
