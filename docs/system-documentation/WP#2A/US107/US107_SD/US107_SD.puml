@@ -1,0 +1,46 @@
+@startuml
+autonumber
+title Find Airport Details by IATA Code
+
+autoactivate on
+
+actor "Backoffice Operator" as User
+participant FindAirportDetailsController as Ctrl
+participant ViewAirportDetailsUseCase <<@UseCase>>
+participant ViewAirportDetailsService <<Domain Service>>
+database AirportRepository as Repo
+
+User -> Ctrl : GET /airports/{iataCode}
+
+Ctrl -> Ctrl : extract username from JWT
+alt User has authorization
+    Ctrl -> UC : execute(iataCode)
+
+    UC -> SVC : fetchAirportDetails(iataCode)
+
+
+    SVC -> Repo : findByIataCode(iataCode)
+    return airportOptional : Optional<Airport>
+
+    alt The airport exists (Optional is present)
+
+        SVC -> SVC : airport = airportOptional.get()
+        return
+
+        return airport
+        return airport
+        Ctrl --> User : 200 OK\n{ name, iataCode, coordinates, runwayInfo, ... }
+
+    else The airport does not exist (Optional is empty)
+        SVC --> UC : throw EntityNotFoundException
+        deactivate SVC
+        UC --> Ctrl : throw ResponseStatusException(404, "Not Found")
+        deactivate UC
+        Ctrl --> User : 404 Not Found\n{ message: "Airport not found" }
+    end
+
+else User does not have authorization
+    Ctrl --> User : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

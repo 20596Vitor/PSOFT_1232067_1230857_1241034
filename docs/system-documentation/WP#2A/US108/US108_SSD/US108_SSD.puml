@@ -1,0 +1,20 @@
+@startuml
+autonumber
+title Search for Airports — System Sequence Diagram
+
+autoactivate on
+actor "BO" as BO
+participant ":System" as Sys
+
+BO -> Sys : GET /airports?city={city}&country={country}&name={name}
+
+alt User has authorization
+
+
+    Sys --> BO : 200 OK\n[ { airport1 }, { airport2 }, ... ]
+
+else User does not have authorization
+    Sys --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

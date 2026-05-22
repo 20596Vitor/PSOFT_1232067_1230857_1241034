@@ -1,0 +1,60 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+title Update Airport Status — Domain Model
+
+package "Airport Aggregate" {
+
+    class Airport <<entity>> <<root>> {
+        - name : String
+    }
+
+    class LocationIdentifier <<value object>> {
+        - iata_code : String
+    }
+
+    class AirportLocation <<value object>> {
+        - city : String
+        - country : String
+        - region : String
+    }
+
+    class AirportType <<entity>> {
+        - name : String
+        - description : String
+    }
+
+    class Coordinates <<value object>> {
+        - longitude : double
+        - longitude_direction : char
+        - latitude : double
+        - latitude_direction : char
+    }
+
+    class TimeZone <<entity>> {
+        - abbreviation : String
+        - utc_offset_minutes : int
+    }
+
+    class OperationalHours <<value object>> {
+        - opening_hours : int
+        - closing_hours : int
+    }
+
+    enum AirportStatus <<enum>> {
+        OPERATIONAL
+        CLOSED
+        UNDER_MAINTENANCE
+    }
+
+    Airport o--> "1" LocationIdentifier
+    Airport o--> "1" AirportLocation
+    Airport o--> "1" AirportType
+    Airport o--> "1" Coordinates
+    Airport o--> "1" TimeZone
+    Airport o--> "1" OperationalHours
+    Airport o--> "1" AirportStatus
+}
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Airport's details given its IATA code - Class Diagram
+
+package "Airport Aggregate"{
+
+    class Airport <<root>>{
+           - name: String
+           - contact: String
+           - timeZone: Timezone
+           - coordinates: Coordinates
+           - airportIdentifier: IATAcode
+           - airportType: AirportType
+           - airportLocation: AirportLocation
+           - airportStatus: AirportStatus
+           - runwayInfo: List<RunwayInfo>
+           - images: List<Images>
+    }
+
+    interface AirportRepository {
+            ---
+            + findByIataCode(iataCode: IATAcode) : Optional<Airport>
+        }
+
+        class ViewAirportDetailsService <<Domain Service>> {
+            ---
+            + getAirportDetails(iataCode: IATAcode) : Airport
+        }
+
+        class ViewAirportDetailsUseCase <<@UseCase>> {
+            ---
+            + execute(iataCode: IATAcode) : Airport
+        }
+ViewAirportDetailsUseCase ..> ViewAirportDetailsService : sends to >
+ViewAirportDetailsService ..> AirportRepository : uses >
+
+}
+
+
+@enduml

@@ -1,0 +1,50 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Search for Airports: Architecture — Class Diagram
+
+package "Domain Layer (Airport Aggregate)" {
+    class Airport <<root>> <<entity>> {
+        - name : String
+        - iataCode : LocationIdentifier
+        - airportType : AirportType
+        - coordinates : Coordinates
+        - airportLocation : AirportLocation
+        - timeZone : TimeZone
+        - operationalHours : OperationalHours
+        - status : AirportStatus
+    }
+
+    interface AirportRepository {
+        ---
+        + findByCriteria(query : SearchAirportsQuery) : List<Airport>
+    }
+
+    class SearchAirportsService <<Domain Service>> {
+        ---
+        + search(query : SearchAirportsQuery) : List<Airport>
+    }
+}
+
+package "Application Layer" {
+    class SearchAirportsQuery <<Value Object / DTO>> {
+        - city : String
+        - country : String
+        - name : String
+        ---
+        + getCity() : String
+        + getCountry() : String
+        + getName() : String
+    }
+
+    class SearchAirportsUseCase <<@UseCase>> {
+        ---
+        + execute(query : SearchAirportsQuery) : List<Airport>
+    }
+}
+
+SearchAirportsUseCase ..> SearchAirportsQuery : uses >
+SearchAirportsUseCase ..> SearchAirportsService : gives responsability to >
+SearchAirportsService ..> AirportRepository : uses >
+
+@enduml

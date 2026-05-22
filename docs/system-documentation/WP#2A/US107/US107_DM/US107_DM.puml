@@ -1,0 +1,61 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Find Airport Details by IATA Code — Domain Model
+
+package "Airport Aggregate" {
+
+    class Airport <<entity>> <<root>> {
+        - name : String
+        - images : List<String>
+    }
+
+    class IATAcode <<value object>> {
+        - iata_code : String
+    }
+
+    class Timezone <<value object>> {
+        - abbreviation : String
+        - utc_minutes : int
+        - gmt_minutes : int
+    }
+
+    class Coordinates <<value object>> {
+        - longitude : double
+        - longitude_direction : char
+        - latitude : double
+        - latitude_direction : char
+    }
+
+    class AirportType <<entity>> {
+        - name : String
+        - description : String
+    }
+
+    class AirportLocation <<value object>> {
+        - city : String
+        - country : String
+        - region : String
+    }
+
+    enum AirportStatus <<enum>> {
+        OPERATIONAL
+        CLOSED
+        UNDER_MAINTENANCE
+    }
+
+    class RunwayInfo <<entity>> {
+        - name : String
+        - length : double
+    }
+
+    Airport o--> "1" IATAcode
+    Airport o--> "1" Timezone
+    Airport o--> "1" Coordinates
+    Airport o--> "1" AirportType
+    Airport o--> "1" AirportLocation
+    Airport o--> "1" AirportStatus
+    Airport o--> "0..*" RunwayInfo
+}
+
+@enduml

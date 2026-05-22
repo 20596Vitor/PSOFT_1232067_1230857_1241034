@@ -1,0 +1,37 @@
+@startuml
+autonumber
+title Search for Airports
+
+autoactivate on
+
+actor "BO" as BO
+participant SearchAirportsController as Ctrl
+participant SearchAirportsUseCase <<@UseCase>>
+participant SearchAirportsService <<Domain Service>>
+database AirportRepository as Repo
+
+BO -> Ctrl : GET /airports?city={city}&country={country}&name={name}
+
+Ctrl -> Ctrl : extract username from JWT
+alt User has authorization
+
+
+    Ctrl -> SearchAirportsUseCase : execute(query)
+
+    SearchAirportsUseCase -> SVC : search(query)
+
+
+    SVC -> Repo : findByCriteria(query)
+    return airportList : List<Airport>
+
+    return airportList
+    return airportList
+
+
+    Ctrl --> BO : 200 OK\n[ { airport1 }, { airport2 }, ... ]
+
+else User does not have authorization
+    Ctrl --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

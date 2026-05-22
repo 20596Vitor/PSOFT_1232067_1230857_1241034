@@ -1,0 +1,54 @@
+@startuml
+autonumber
+title Update Airport Status
+
+autoactivate on
+
+actor "BO" as BO
+participant UpdateAirportStatusController as Ctrl
+participant UpdateAirportStatusUseCase <<@UseCase>>
+participant UpdateAirportService <<Domain Service>>
+database AirportRepository as Repo
+
+BO -> Ctrl : PATCH /airports/{iataCode}/status\n{ "status": "CLOSED" }
+
+Ctrl -> Ctrl : extract username from JWT
+alt User has authorization
+    Ctrl -> UC : execute(iataCode, newStatus)
+
+    UC -> SVC : changeAirportStatus(iataCode, newStatus)
+
+    SVC -> Repo : findByIataCode(iataCode)
+
+    return airportOptional : Optional<Airport>
+
+    alt The airport exists (Optional is present)
+
+        SVC -> SVC : airport = airportOptional.get()
+        return
+
+
+        SVC -> Airport : updateStatus(newStatus)
+        return success
+
+
+        SVC -> Repo : save(airport)
+        return airport(persisted)
+
+        return airport
+        return airport
+        Ctrl --> BO : 200 OK\n{ iataCode, name, status: "CLOSED", ... }
+
+    else The airport does not exist (Optional is empty)
+        SVC --> UC : throw EntityNotFoundException
+        deactivate SVC
+        UC --> Ctrl : throw ResponseStatusException(404, "Not Found")
+        deactivate UC
+        Ctrl --> BO : 404 Not Found\n{ message: "Airport not found" }
+    end
+
+else User does not have authorization
+    Ctrl --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

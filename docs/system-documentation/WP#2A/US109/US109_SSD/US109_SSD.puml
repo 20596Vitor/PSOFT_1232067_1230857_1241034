@@ -1,18 +1,18 @@
 @startuml
 autonumber
-title Find Airport Details by IATA Code — System Sequence Diagram
+title Update Airport Status — System Sequence Diagram
 
 autoactivate on
 
-actor "Backoffice Operator" as BO
+actor "BO" as BO
 participant ":System" as Sys
 
-BO -> Sys : GET /airports/{iataCode}
+BO -> Sys : PATCH /airports/{iataCode}/status\n{ "status": "CLOSED" }
 
 alt User has authorization
 
     alt The airport exists in the system
-        Sys --> BO : 200 OK\n{ name, iataCode, coordinates, location, status, ... }
+        Sys --> BO : 200 OK\n{ iataCode, name, status: "CLOSED", ... }
 
     else The airport does not exist
         Sys --> BO : 404 Not Found\n{ message: "Airport not found" }
