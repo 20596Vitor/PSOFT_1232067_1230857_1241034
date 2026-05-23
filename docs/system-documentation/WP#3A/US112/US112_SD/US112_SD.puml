@@ -1,0 +1,50 @@
+@startuml
+autonumber
+title US112 - Update or Deactivate a Route — Sequence Diagram
+
+autoactivate on
+
+actor "ATCC / Backoffice Op." as Actor
+participant "RouteController" as Ctrl
+participant "UpdateRouteUseCase" as UC
+participant "UpdateRouteService" as Service
+database "RouteRepository" as Repo
+
+Actor -> Ctrl : PATCH /routes/{routeId}\n{ active, estimatedFlightTime, minRange, minCapacity }
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User is ATCC OR Backoffice Operator
+    Ctrl -> UC : execute(routeId, active, estimatedFlightTime, minRange, minCapacity)
+
+    UC -> Service : updateRoute(routeId, active, estimatedFlightTime, minRange, minCapacity)
+
+    Service -> Repo : findById(routeId)
+    return Optional<Route>
+
+    alt Route exists
+        Service -> "route: Route" as Route : updateRoute(active, estimatedFlightTime, minRange, minCapacity)
+
+        note right of Route
+            A entidade altera os seus atributos e
+            chama o seu método interno para
+            adicionar um novo RouteRecord ao histórico.
+        end note
+        return route (updated)
+
+        Service -> Repo : save(route)
+        return route (persisted)
+
+        return route
+        return 200 OK\n{ routeId, active, estimatedFlightTime, _links }
+
+    else Route does NOT exist
+        Service --> UC : throw IllegalArgumentException("Route not found")
+        UC --> Ctrl : throw ResponseStatusException(404, "Not Found")
+        Ctrl --> Actor : 404 Not Found\n{ message: "Route not found" }
+    end
+
+else User does not have authorization
+    Ctrl --> Actor : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

@@ -1,0 +1,33 @@
+@startuml
+autonumber
+title US113.1 - View Routes by Origin Airport — Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as Actor
+participant "RouteController" as Ctrl
+participant "ViewRoutesUseCase" as UC
+participant "ViewRouteService" as Service
+database "RouteRepository" as Repo
+
+Actor -> Ctrl : GET /routes?origin={airportIata}
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has authorization (ATCC Role)
+    Ctrl -> UC : executeGetByOrigin(airportIata)
+
+    UC -> Service : getRoutesFromAirport(airportIata)
+
+    Service -> Repo : findByOriginAirportIata(airportIata)
+    return List<Route>
+
+    return List<Route>
+    return List<Route>
+
+    return 200 OK\n{ routes: [ ... ], _links }
+
+else User does not have authorization
+    Ctrl --> Actor : 403 Forbidden\n{ message: "Not authorized" }
+end
+
+@enduml

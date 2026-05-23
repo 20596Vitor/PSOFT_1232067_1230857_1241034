@@ -1,0 +1,62 @@
+@startuml
+autonumber
+title US110 - Create a Flight Route — Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as Actor
+participant "RouteController" as Ctrl
+participant "CreateRouteUseCase" as UC
+participant "CreateRouteService" as Service
+database "AirportRepository" as AirportRepo
+database "RouteRepository" as RouteRepo
+
+Actor -> Ctrl : POST /routes\n{ originIata, destinationIata, estimatedFlightTime, minRange, minCapacity }
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has authorization (ATCC Role)
+    Ctrl -> UC : execute(originIata, destinationIata, estimatedFlightTime, minRange, minCapacity)
+
+    UC -> Service : createRoute(originIata, destinationIata, estimatedFlightTime, minRange, minCapacity)
+
+    Service -> AirportRepo : existsById(originIata)
+    return originExists
+
+    Service -> AirportRepo : existsById(destinationIata)
+    return destinationExists
+
+    alt Origin OR Destination Airport does NOT exist
+        Service --> UC : throw IllegalArgumentException("One or both airports do not exist")
+        UC --> Ctrl : throw ResponseStatusException(404, "Not Found")
+        Ctrl --> Actor : 404 Not Found\n{ message: "Airport(s) not found" }
+
+    else Both Airports exist
+        Service -> RouteRepo : existsByOriginAndDestination(originIata, destinationIata)
+        return routeExists
+
+        alt Route already exists
+            Service --> UC : throw IllegalArgumentException("Route already exists")
+            UC --> Ctrl : throw ResponseStatusException(409, "Conflict")
+            Ctrl --> Actor : 409 Conflict\n{ message: "Route already registered between these airports" }
+
+        else Route does NOT exist
+            Service -> Route ** : new Route(originIata, destinationIata, estimatedFlightTime, minRange, minCapacity)
+
+            note right of Route
+                This also creates the initial
+                RouteRecord internally.
+            end note
+
+            Service -> RouteRepo : save(route)
+            return route(persisted)
+
+            return route
+            return 201 Created\n{ routeId, originIata, destinationIata, _links }
+        end
+    end
+
+else User does not have authorization
+    Ctrl --> Actor : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

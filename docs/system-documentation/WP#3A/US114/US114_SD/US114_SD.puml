@@ -1,0 +1,44 @@
+@startuml
+autonumber
+title US114 - Search Routes by Origin and/or Destination — Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as Actor
+participant "RouteController" as Ctrl
+participant "SearchRoutesUseCase" as UC
+participant "SearchRoutesService" as Service
+database "RouteRepository" as Repo
+
+Actor -> Ctrl : GET /routes?origin={originIata}&destination={destIata}
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has authorization (ATCC Role)
+    Ctrl -> UC : execute(originIata, destIata)
+
+    UC -> Service : searchRoutes(originIata, destIata)
+
+    alt both origin and destination provided
+        Service -> Repo : findByOriginAirportIataAndDestinationAirportIata(originIata, destIata)
+        return List<Route>
+
+    else only origin provided
+        Service -> Repo : findByOriginAirportIata(originIata)
+        return List<Route>
+
+    else only destination provided
+        Service -> Repo : findByDestinationAirportIata(destIata)
+        return List<Route>
+    end
+
+    return List<Route>
+
+    return List<Route>
+
+    return 200 OK\n{ routes: [ ... ], _links }
+
+else User does not have authorization
+    Ctrl --> Actor : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

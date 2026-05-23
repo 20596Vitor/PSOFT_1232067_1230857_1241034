@@ -1,0 +1,42 @@
+@startuml
+title Update or Deactivate a Route (US112) - Class Diagram
+
+package "Route Aggregate" {
+    class Route <<root>> {
+        - routeId: String
+        - originAirportIata: String
+        - destinationAirportIata: String
+        - active: boolean
+        - estimatedFlightTime: int
+        - minRange: float
+        - minCapacity: int
+        ---
+        + updateRoute(estimatedTime: int, minRange: float, minCap: int, activeStatus: boolean)
+        - appendNewRouteRecord()
+    }
+
+    class RouteRecord <<value object>> {
+        - recordDate: Date
+        - active: boolean
+        - estimatedFlightTime: int
+        - minRange: float
+        - minCapacity: int
+    }
+
+    class UpdateRouteService <<Domain Service>> {
+        ---
+        + updateRoute(routeId: String, estimatedTime: int, minRange: float, minCap: int, active: boolean): Route
+    }
+
+    interface RouteRepository {
+        ---
+        + Optional<Route> findById(routeId: String)
+        + Route save(route: Route)
+    }
+}
+
+Route "1 " *--> "N" RouteRecord : contains >
+UpdateRouteService ..> Route : updates >
+UpdateRouteService ..> RouteRepository : uses >
+
+@enduml

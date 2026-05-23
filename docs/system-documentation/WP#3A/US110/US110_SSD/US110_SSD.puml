@@ -1,0 +1,17 @@
+@startuml
+autonumber
+
+title US110 - Create a Flight Route — Simplified Sequence Diagram
+actor "ATCC" as ATCC
+participant ":System" as Sys
+
+ATCC -> Sys: Create a flight route
+Sys --> ATCC: Request details \n(origin airport, destination airport, estimated flight time, min range, min capacity)
+
+ATCC -> Sys: Inserts requested data
+Sys --> ATCC: Shows data inserted to confirm \n(and validates if both airports exist)
+
+ATCC -> Sys: Confirms data inserted
+Sys --> ATCC: Creates the flight route and displays a confirmation message
+
+@enduml

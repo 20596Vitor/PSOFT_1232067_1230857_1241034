@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+title US114 - Search Routes by Origin and/or Destination — Simplified Sequence Diagram
+actor "ATCC" as Actor
+participant ":System" as Sys
+
+Actor -> Sys: Requests to search for flight routes (provides origin, destination, or both)
+Sys --> Actor: Validates the search parameters and displays the matching routes
+
+@enduml

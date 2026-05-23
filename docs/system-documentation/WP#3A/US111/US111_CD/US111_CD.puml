@@ -1,0 +1,40 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title View Route History (US111) - Class Diagram
+
+package "Route Aggregate" {
+
+    class Route <<root>> {
+        - routeId: String
+        - originAirportIata: String
+        - destinationAirportIata: String
+        - active: boolean
+        ---
+        + List<RouteRecord> getRouteHistory()
+    }
+
+    class RouteRecord <<value object>> {
+        - recordDate: Date
+        - active: boolean
+        - estimatedFlightTime: int
+        - minRange: float
+        - minCapacity: int
+    }
+
+    class ViewRouteHistoryService <<Domain Service>> {
+        ---
+        + List<RouteRecord> getRouteHistory(String routeId)
+    }
+
+    interface RouteRepository {
+        ---
+        + Optional<Route> findById(String routeId)
+    }
+
+    Route "1 " *--> "N" RouteRecord : contains >
+    ViewRouteHistoryService ..> Route : retrieves >
+    ViewRouteHistoryService ..> RouteRepository : uses >
+}
+
+@enduml

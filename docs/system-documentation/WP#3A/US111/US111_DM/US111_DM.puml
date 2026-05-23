@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title View Route History (US111) - Domain Model
+
+package "Route Aggregate" {
+
+    class Route <<entity>> <<root>> {
+        - route_id: String
+        - active: boolean
+        - estimated_flight_time: int
+        - min_range: float
+        - min_capacity: int
+    }
+
+    class RouteRecord <<value object>> {
+        - record_date: Date
+        - active: boolean
+        - estimated_flight_time: int
+        - min_range: float
+        - min_capacity: int
+    }
+
+    Route *--> "1..*" RouteRecord : " maintains history >"
+}
+
+@enduml

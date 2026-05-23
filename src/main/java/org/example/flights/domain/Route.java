@@ -2,6 +2,7 @@ package org.example.flights.domain;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,9 +65,12 @@ public class Route {
         this.minRange = minRange;
         this.minCapacity = minCapacity;
         this.active = true;
+
+        // Regista o estado inicial no momento da criação
+        addHistoryRecord();
     }
 
-    public void addHistoryRecord() {
+    private void addHistoryRecord() {
         this.history.add(new RouteRecord(this.active, this.estimatedFlightTime, this.minRange, this.minCapacity));
     }
 
@@ -74,15 +78,22 @@ public class Route {
         if (estimatedFlightTime <= 0 || minRange <= 0 || minCapacity <= 0) {
             throw new IllegalArgumentException("Valores inválidos para atualização.");
         }
-        addHistoryRecord();
+
+        // Atualiza os valores primeiro
         this.estimatedFlightTime = estimatedFlightTime;
         this.minRange = minRange;
         this.minCapacity = minCapacity;
+
+        // Regista a fotografia do novo estado
+        addHistoryRecord();
     }
 
     public void deactivate() {
-        addHistoryRecord();
+        // Atualiza o estado primeiro
         this.active = false;
+
+        // Regista a fotografia do novo estado
+        addHistoryRecord();
     }
 
     // Getters
@@ -93,6 +104,9 @@ public class Route {
     public float getMinRange() { return minRange; }
     public int getMinCapacity() { return minCapacity; }
     public boolean isActive() { return active; }
-    public List<RouteRecord> getHistory() { return history; }
+
+    // Devolve uma lista imutável para proteger o encapsulamento
+    public List<RouteRecord> getHistory() { return Collections.unmodifiableList(history); }
+
     public Long getVersion() { return version; }
 }

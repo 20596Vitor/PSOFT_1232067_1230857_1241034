@@ -2,13 +2,13 @@ package org.example.flights.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Embeddable
 public class RouteRecord {
 
     @Column(nullable = false)
-    private Date recordDate;
+    private LocalDateTime recordDate;
 
     @Column(nullable = false)
     private boolean active;
@@ -27,14 +27,14 @@ public class RouteRecord {
     }
 
     public RouteRecord(boolean active, int estimatedFlightTime, float minRange, int minCapacity) {
-        this.recordDate = new Date();
+        this.recordDate = LocalDateTime.now();
         this.active = active;
         this.estimatedFlightTime = estimatedFlightTime;
         this.minRange = minRange;
         this.minCapacity = minCapacity;
     }
 
-    public Date getRecordDate() {
+    public LocalDateTime getRecordDate() {
         return recordDate;
     }
 

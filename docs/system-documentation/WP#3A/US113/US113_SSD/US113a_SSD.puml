@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+title US113.1 - View Routes by Origin Airport — Simplified Sequence Diagram
+actor "ATCC" as Actor
+participant ":System" as Sys
+
+Actor -> Sys: Requests to view all flight routes from a specific airport (provides Airport IATA code)
+Sys --> Actor: Validates the request and displays the list of corresponding routes
+
+@enduml

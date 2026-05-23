@@ -1,0 +1,31 @@
+@startuml
+title Search Routes (US114) - Class Diagram
+
+package "Route Aggregate" {
+    class Route <<root>> {
+        - routeId: String
+        - originAirportIata: String
+        - destinationAirportIata: String
+        - active: boolean
+        - estimatedFlightTime: int
+        - minRange: float
+        - minCapacity: int
+    }
+
+    class SearchRoutesService <<Domain Service>> {
+        ---
+        + searchRoutes(originIata: String, destinationIata: String): List<Route>
+    }
+
+    interface RouteRepository {
+        ---
+        + findByOriginAirportIata(originIata: String): List<Route>
+        + findByDestinationAirportIata(destinationIata: String): List<Route>
+        + findByOriginAirportIataAndDestinationAirportIata(originIata: String, destinationIata: String): List<Route>
+    }
+}
+
+SearchRoutesService ..> Route : retrieves >
+SearchRoutesService ..> RouteRepository : uses >
+
+@enduml

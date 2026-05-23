@@ -1,0 +1,31 @@
+@startuml
+title View Routes and Route Details (US113) - Class Diagram
+
+package "Route Aggregate" {
+    class Route <<root>> {
+        - routeId: String
+        - originAirportIata: String
+        - destinationAirportIata: String
+        - active: boolean
+        - estimatedFlightTime: int
+        - minRange: float
+        - minCapacity: int
+    }
+
+    class ViewRouteService <<Domain Service>> {
+        ---
+        + getRoutesFromAirport(airportIata: String): List<Route>
+        + getRouteDetails(routeId: String): Route
+    }
+
+    interface RouteRepository {
+        ---
+        + findByOriginAirportIata(airportIata: String): List<Route>
+        + findById(routeId: String): Optional<Route>
+    }
+}
+
+ViewRouteService ..> Route : retrieves >
+ViewRouteService ..> RouteRepository : uses >
+
+@enduml

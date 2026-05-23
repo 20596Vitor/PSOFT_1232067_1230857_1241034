@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+title US113.2 - View Route Details by ID — Simplified Sequence Diagram
+actor "ATCC" as Actor
+participant ":System" as Sys
+
+Actor -> Sys: Requests to view the details of a specific flight route (provides Route ID)
+Sys --> Actor: Validates the ID and displays the route's detailed information
+
+@enduml

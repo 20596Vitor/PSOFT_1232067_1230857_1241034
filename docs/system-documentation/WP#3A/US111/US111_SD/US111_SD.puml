@@ -1,0 +1,47 @@
+@startuml
+autonumber
+title US111 - View Route History — Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as Actor
+participant "RouteController" as Ctrl
+participant "ViewRouteHistoryUseCase" as UC
+participant "ViewRouteHistoryService" as Service
+database "RouteRepository" as Repo
+
+Actor -> Ctrl : GET /routes/{routeId}/history
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has authorization (ATCC Role)
+    Ctrl -> UC : execute(routeId)
+
+    UC -> Service : getRouteHistory(routeId)
+
+    Service -> Repo : findById(routeId)
+    return Optional<Route>
+
+    alt Route exists
+        Service -> "route: Route" as Route : getRouteHistory()
+        note right of Route
+            The Route entity itself is responsible
+            for returning its internal list
+            of RouteRecords.
+        end note
+        return List<RouteRecord>
+
+        return List<RouteRecord>
+
+        return 200 OK\n{ routeId, history: [ ... ], _links }
+
+    else Route does NOT exist
+        Service --> UC : throw IllegalArgumentException("Route not found")
+        UC --> Ctrl : throw ResponseStatusException(404, "Not Found")
+        Ctrl --> Actor : 404 Not Found\n{ message: "Route not found" }
+    end
+
+else User does not have authorization
+    Ctrl --> Actor : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

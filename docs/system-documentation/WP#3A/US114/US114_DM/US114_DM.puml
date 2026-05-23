@@ -1,0 +1,42 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Search Routes (US114) - Domain Model
+
+package "Route Aggregate" {
+
+    class Route <<entity>> <<root>> {
+        - active: boolean
+    }
+
+    Route o--> "1" RouteId
+    Route o--> "2" IATAcode : "origin / destination"
+    Route o--> "1..*" RouteRecord : " contains details >"
+
+    class RouteId <<value object>> {
+        - id: String
+    }
+
+    class IATAcode <<value object>> {
+        - iata_code: String
+    }
+
+    class RouteRecord <<value object>> {
+        - record_date: Date
+        - active: boolean
+    }
+
+    RouteRecord o--> "1" FlightTime
+    RouteRecord o--> "1" AircraftRequirements
+
+    class FlightTime <<value object>> {
+        - time_minutes: int
+    }
+
+    class AircraftRequirements <<value object>> {
+        - min_range: float
+        - min_capacity: int
+    }
+}
+
+@enduml

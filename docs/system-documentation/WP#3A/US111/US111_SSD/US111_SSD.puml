@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+title US111 - View Route History — Simplified Sequence Diagram
+actor "ATCC" as ATCC
+participant ":System" as Sys
+
+ATCC -> Sys: Requests to view the history of a specific flight route (provides Route ID)
+Sys --> ATCC: Validates the request and displays the route history details (Route Records)
+
+@enduml

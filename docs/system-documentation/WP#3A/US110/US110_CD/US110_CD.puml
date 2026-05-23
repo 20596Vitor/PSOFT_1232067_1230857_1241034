@@ -1,0 +1,50 @@
+@startuml
+title Create Flight Route (US110) - Class Diagram
+
+package "Route Aggregate" {
+    class Route <<root>> {
+        - routeId: String
+        - originAirportIata: String
+        - destinationAirportIata: String
+        - active: boolean
+        - estimatedFlightTime: int
+        - minRange: float
+        - minCapacity: int
+        ---
+        + Route(routeId, originAirportIata, destinationAirportIata, estimatedFlightTime, minRange, minCapacity)
+        + addRouteRecord(recordDate, active, estimatedFlightTime, minRange, minCapacity)
+    }
+
+    class RouteRecord <<value object>> {
+        - recordDate: Date
+        - active: boolean
+        - estimatedFlightTime: int
+        - minRange: float
+        - minCapacity: int
+    }
+
+    class CreateRouteService <<Domain Service>> {
+        ---
+        + createRoute(originIata: String, destinationIata: String, estimatedTime: int, minRange: float, minCap: int): Route
+    }
+
+    interface RouteRepository {
+        ---
+        + Route save(route: Route)
+        + boolean existsByOriginAndDestination(originIata: String, destinationIata: String)
+    }
+}
+
+package "Airport Aggregate" {
+    interface AirportRepository {
+        ---
+        + boolean existsById(iataCode: String)
+    }
+}
+
+Route "1 " *--> "N" RouteRecord : contains >
+CreateRouteService ..> Route : creates >
+CreateRouteService ..> RouteRepository : uses >
+CreateRouteService ..> AirportRepository : uses >
+
+@enduml

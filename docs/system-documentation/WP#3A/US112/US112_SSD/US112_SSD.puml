@@ -1,0 +1,17 @@
+@startuml
+autonumber
+
+title US112 - Update or Deactivate a Route — Simplified Sequence Diagram
+actor "ATCC / Backoffice Op." as Actor
+participant ":System" as Sys
+
+Actor -> Sys: Requests to update or deactivate a flight route
+Sys --> Actor: Requests the route ID and new details\n(active status, estimated flight time, min range, min capacity)
+
+Actor -> Sys: Inserts the requested data
+Sys --> Actor: Shows data inserted to confirm
+
+Actor -> Sys: Confirms the data
+Sys --> Actor: Updates the route (recording the new history) and displays a confirmation message
+
+@enduml
