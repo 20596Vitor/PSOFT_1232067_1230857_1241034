@@ -1,29 +1,61 @@
 package org.example.bootstrap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.airports.domain.Airport;
 import org.example.airports.domain.AirportStatus;
+import org.example.airports.domain.AirportType;
 import org.example.airports.repositories.AirportRepository;
+import org.example.airports.repositories.AirportTypeRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
+import java.io.InputStream;
+import java.util.List;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     private final AirportRepository airportRepository;
+    private final AirportTypeRepository airportTypeRepository; // Adicionado!
 
-    public DataInitializer(AirportRepository airportRepository) {
+    // Construtor com os dois repositórios injetados
+    public DataInitializer(AirportRepository airportRepository, AirportTypeRepository airportTypeRepository) {
         this.airportRepository = airportRepository;
+        this.airportTypeRepository = airportTypeRepository;
     }
+
     @Override
     public void run(String... args) throws Exception {
         System.out.println("--- INICIAR BOOTSTRAP DE DADOS (WP #0A) ---");
-        if (airportRepository.count() == 0) {
 
-            Airport lisboa = new Airport("LIS", "Aeroporto Humberto Delgado", "Lisboa", "Portugal", AirportStatus.OPERATIONAL);
-            Airport porto = new Airport("OPO", "Aeroporto Francisco Sá Carneiro", "Porto", "Portugal", AirportStatus.OPERATIONAL);
+        if (airportTypeRepository.count() == 0) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+
+                InputStream inputStream = getClass().getResourceAsStream("/airportTypes.json");
+
+                if (inputStream != null) {
+
+                    List<AirportType> types = mapper.readValue(inputStream,
+                            mapper.getTypeFactory().constructCollectionType(List.class, AirportType.class));
+
+                    airportTypeRepository.saveAll(types);
+                    System.out.println("-> [WP #0A] Airport Types preloaded com sucesso a partir do JSON!");
+                } else {
+                    System.out.println("-> [Aviso] Ficheiro airportTypes.json não foi encontrado em resources.");
+                }
+            } catch (Exception e) {
+                System.out.println("-> Erro ao carregar Airport Types: " + e.getMessage());
+            }
+        }
+
+        if (airportRepository.count() == 0) {
+            Airport lisboa = new Airport("LIS", "Aeroporto Humberto Delgado", "Lisboa", "Portugal","military",AirportStatus.OPERATIONAL);
+            Airport porto = new Airport("OPO", "Aeroporto Francisco Sá Carneiro", "Porto", "Portugal", "comercial" ,AirportStatus.OPERATIONAL);
 
             airportRepository.save(lisboa);
             airportRepository.save(porto);
+            System.out.println("-> Aeroportos de teste inicializados!");
         }
 
         System.out.println("--- BOOTSTRAP CONCLUÍDO ---");

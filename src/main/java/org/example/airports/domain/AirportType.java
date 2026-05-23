@@ -1,22 +1,28 @@
 package org.example.airports.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import org.antlr.v4.runtime.misc.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 public class AirportType {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "AirportType_dbID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String type;
 
-    public AirportType(@JsonProperty("type") @NotNull String type) {
+    public AirportType() {}
+
+    public AirportType(@JsonProperty("type") String type) {
         this.type = type;
     }
 
-    public AirportType() {
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
