@@ -1,0 +1,89 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US106a Adicionar Certificação de Aeronaves
+  version: 1.0.0
+  description: Documentação para associar validar certificações as aeronaves
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/airports/{iataCode}/certifications:
+    post:
+      summary: Adicionar um modelo de avião certificado ao aeroporto
+      operationId: addAirplaneCertification
+      parameters:
+        - name: iataCode
+          in: path
+          required: true
+          description: Código IATA de 3 letras do aeroporto a certificar.
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            example: "BCN"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - modelName
+              properties:
+                modelName:
+                  type: string
+                  example: "Airbus A320"
+                  description: Nome do modelo da aeronave a ser certificada para este aeroporto.
+      responses:
+        '200':
+          description: Certificação adicionada com sucesso. Retorna o aeroporto atualizado com a nova lista e links.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
+        '400':
+          description: Dados inválidos ou aeroporto não aceita este tipo de aeronave.
+        '404':
+          description: Aeroporto não encontrado com o código IATA fornecido.
+
+components:
+  schemas:
+    Airport:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        iataCode:
+          type: string
+          example: "BCN"
+        name:
+          type: string
+          example: "Aeroporto de Barcelona-El Prat"
+        city:
+          type: string
+          example: "Barcelona"
+        country:
+          type: string
+          example: "Espanha"
+        airportType:
+          type: string
+          example: "comercial"
+        status:
+          type: string
+          example: "OPERATIONAL"
+        certifiedAirplaneModels:
+          type: array
+          items:
+            type: string
+          example: ["Airbus A320"]
+        _links:
+          type: object
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                  example: "http://localhost:8080/api/airports/BCN"

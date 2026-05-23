@@ -1,0 +1,65 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US108 Pesquisar Aeroportos
+  version: 1.0.0
+  description: Documentação para demonstrar como se consulta um aeroporto dados certos dados
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/airports/search:
+    get:
+      summary: Pesquisar ou filtrar aeroportos
+      operationId: searchAirports
+      parameters:
+        - name: country
+          in: query
+          required: false
+          description: Filtrar a lista de aeroportos por um país específico.
+          schema:
+            type: string
+            example: "Portugal"
+      responses:
+        '200':
+          description: Pesquisa efetuada com sucesso. Retorna uma lista de aeroportos (pode vir vazia).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Airport'
+        '400':
+          description: Parâmetros de pesquisa inválidos.
+
+components:
+  schemas:
+    Airport:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        iataCode:
+          type: string
+          example: "LIS"
+        name:
+          type: string
+          example: "Aeroporto Humberto Delgado"
+        city:
+          type: string
+          example: "Lisboa"
+        country:
+          type: string
+          example: "Portugal"
+        airportType:
+          type: string
+          example: "comercial"
+        status:
+          type: string
+          example: "OPERATIONAL"
+        certifiedAirplaneModels:
+          type: array
+          items:
+            type: string
+          example: ["Airbus A320"]

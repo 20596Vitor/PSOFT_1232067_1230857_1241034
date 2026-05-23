@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - Sistema de Gestão de Aeroportos
+  version: 1.0
+  description: |
+    Especificação OpenAPI para o ecossistema AlSafe.
+    Focada na gestão direta das entidades de infraestrutura aeroportuária.
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/auth/login:
+    post:
+      summary: Autenticar um utilizador do sistema (Admin / Operator)
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: "admin"
+                password:
+                  type: string
+                  example: "admin123"
+      responses:
+        '200':
+          description: Autenticação efetuada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: "Autenticação realizada com sucesso!"
+                  username:
+                    type: string
+                    example: "admin"
+                  role:
+                    type: string
+                    example: "ADMIN"
+        '401':
+          description: Credenciais inválidas ou utilizador não encontrado.
+  /api/airports:
+    post:
+      summary: Registar um novo aeroporto (US106)
+      operationId: registerAirport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Airport'
+      responses:
+        '201':
+          description: Aeroporto criado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
+        '400':
+          description: Erro de validação nos dados ou código IATA já existente.
+
+  /api/airports/{iataCode}:
+    get:
+      summary: Consultar detalhes de um aeroporto específico (US107)
+      operationId: getAirportDetails
+      parameters:
+        - name: iataCode
+          in: path
+          required: true
+          description: Código IATA de 3 letras do aeroporto (ex. LIS, OPO)
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+      responses:
+        '200':
+          description: Detalhes do aeroporto encontrados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
+        '404':
+          description: Aeroporto não encontrado.
+
+  /api/airports/{iataCode}/status:
+    patch:
+      summary: Atualizar o estado operacional de um aeroporto (US109)
+      operationId: updateAirportStatus
+      parameters:
+        - name: iataCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: true
+          description: Novo estado do aeroporto
+          schema:
+            type: string
+            enum: [OPERATIONAL, CLOSED, MAINTENANCE]
+      responses:
+        '200':
+          description: Estado atualizado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
+        '404':
+          description: Aeroporto não encontrado.
+
+components:
+  schemas:
+    Airport:
+      type: object
+      required:
+        - iataCode
+        - name
+        - city
+        - country
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Identificador único gerado automaticamente pela base de dados.
+        iataCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          pattern: '^[A-Z]{3}$'
+          example: "MAD"
+          description: Código único do aeroporto com exatamente 3 letras.
+        name:
+          type: string
+          example: "Aeroporto Cristiano Ronaldo"
+        city:
+          type: string
+          example: "Madeira"
+        country:
+          type: string
+          example: "Portugal"
+        airportType:
+          type: string
+          example: "comercial"
+        status:
+          type: string
+          example: "OPERATIONAL"
+        certifiedAirplaneModels:
+          type: array
+          items:
+            type: string
+          example:
