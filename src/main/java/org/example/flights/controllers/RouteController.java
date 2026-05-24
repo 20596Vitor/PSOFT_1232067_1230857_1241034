@@ -45,7 +45,7 @@ public class RouteController {
         List<RouteRecord> history = routeService.getRouteHistory(routeId);
         return ResponseEntity.ok(history);
     }
-    
+
     @PatchMapping("/{routeId}")
     public ResponseEntity<Route> updateOrDeactivateRoute(
             @PathVariable String routeId,
