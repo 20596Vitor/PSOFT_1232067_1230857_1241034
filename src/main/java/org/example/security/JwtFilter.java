@@ -39,7 +39,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 String username = claims.getSubject();
                 String role = claims.get("role", String.class);
 
-                // Prefixo ROLE_ obrigatório para o Spring Security
                 var authority = new SimpleGrantedAuthority("ROLE_" + role);
                 var auth = new UsernamePasswordAuthenticationToken(
                         username, null, List.of(authority));
