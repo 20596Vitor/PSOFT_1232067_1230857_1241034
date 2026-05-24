@@ -19,15 +19,9 @@ public class RouteController {
         this.routeService = routeService;
     }
 
-    // ==========================================
-    // DTOs (Data Transfer Objects) para os pedidos
-    // ==========================================
     public record CreateRouteRequest(String originIata, String destinationIata, int estimatedTime, float minRange, int minCapacity) {}
     public record UpdateRouteRequest(Integer estimatedTime, Float minRange, Integer minCapacity, Boolean active) {}
 
-    // ==========================================
-    // US110 - Create a Flight Route
-    // ==========================================
     @PostMapping
     public ResponseEntity<Route> createRoute(@RequestBody CreateRouteRequest request) {
         Route newRoute = routeService.createRoute(
@@ -40,27 +34,18 @@ public class RouteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newRoute);
     }
 
-    // ==========================================
-    // US113 (Detalhes) - View Route Details
-    // ==========================================
     @GetMapping("/{routeId}")
     public ResponseEntity<Route> getRouteDetails(@PathVariable String routeId) {
         Route route = routeService.getRouteDetails(routeId);
         return ResponseEntity.ok(route);
     }
 
-    // ==========================================
-    // US111 - View Route History
-    // ==========================================
     @GetMapping("/{routeId}/history")
     public ResponseEntity<List<RouteRecord>> getRouteHistory(@PathVariable String routeId) {
         List<RouteRecord> history = routeService.getRouteHistory(routeId);
         return ResponseEntity.ok(history);
     }
-
-    // ==========================================
-    // US112 - Update or Deactivate Route
-    // ==========================================
+    
     @PatchMapping("/{routeId}")
     public ResponseEntity<Route> updateOrDeactivateRoute(
             @PathVariable String routeId,
