@@ -1,0 +1,240 @@
+{
+  "info": {
+    "name": "AISafe - WP1 (Gestão de Aeronaves)",
+    "description": "Coleção de testes automáticos para o Work Package 1 (US101 a US105).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "US101 - Registar Modelo de Aeronave",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"O modelo foi criado com sucesso\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.modelName).to.eql(\"737 MAX 8\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"manufacturer\": \"Boeing\",\n  \"modelName\": \"737 MAX 8\",\n  \"cruisingSpeed\": 839.0,\n  \"fuelCapacity\": 25941.0,\n  \"maxRange\": 6570.0\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/aircraft-models",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "aircraft-models"
+          ]
+        }
+      }
+    },
+    {
+      "name": "US102 - Registar Aeronave",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Matrícula associada corretamente\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.registrationNumber).to.eql(\"CS-TKA\");",
+              "});",
+              "",
+              "pm.test(\"Estado inicial é ACTIVE\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"ACTIVE\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"registrationNumber\": \"CS-TKA\",\n  \"manufacturingDate\": \"2023-01-15\",\n  \"seatingCapacity\": 189,\n  \"status\": \"ACTIVE\",\n  \"modelId\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/aircrafts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "aircrafts"
+          ]
+        }
+      }
+    },
+    {
+      "name": "US103 - Consultar Detalhes da Aeronave",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Retornou o avião correto\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.registrationNumber).to.eql(\"CS-TKA\");",
+              "});",
+              "",
+              "pm.test(\"Contém dados do modelo embutidos\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.aircraftModel.manufacturer).to.eql(\"Boeing\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/aircrafts/CS-TKA",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "aircrafts",
+            "CS-TKA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "US104 - Pesquisar Aeronave por Filtro (Status)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Devolveu uma lista (Array)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/aircrafts?status=ACTIVE",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "aircrafts"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "ACTIVE"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "US105 - Atualizar Estado para Manutenção",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK - Estado Atualizado\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"O estado mudou corretamente para UNDER_MAINTENANCE\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"UNDER_MAINTENANCE\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"UNDER_MAINTENANCE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/aircrafts/CS-TKA/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "aircrafts",
+            "CS-TKA",
+            "status"
+          ]
+        }
+      }
+    }
+  ]
+}

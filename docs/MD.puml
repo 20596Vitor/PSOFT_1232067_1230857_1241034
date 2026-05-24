@@ -1,7 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-
 hide circle
 hide methods
 skinparam classAttributeIconSize 0
@@ -14,12 +13,17 @@ class AircraftModel <<entity>> {
     - fuel_capacity: float
     - max_range: float
     - technical_diagram: String
+    - seating_capacity: int
 }
 
 class Aircraft <<entity>> <<root>> {
-    - registration_ ID: String
+    - registration_ID: String
     - manufacturing_date: Date
     - seating_capacity: int
+    - seating_configuration: String
+    - flight_hours: float
+    - operation_hours: float
+    - range: float
     - last_maintenance: Date
     - days_since_last_maintenance: int
 }
@@ -58,6 +62,7 @@ package "Airport Aggregate" {
         - name: String
         - length: float
         - orientation: String
+        - certification: String
     }
 
     class AirportStatus <<enum>> {
@@ -73,8 +78,13 @@ package "Flight Aggregate"{
 class Flight <<entity>> <<root>> {
     - flight_id: String
     - scheduled_datetime: Date
+    - departure_time: Date
+    - arrival_time: Date
+    - start_date: Date
+    - end_date: Date
     - delayed_hours: float
     - flight_duration: float
+    - route_history: List<String>
 }
 
 Flight *--> FlightStatus
@@ -99,7 +109,6 @@ class Route <<entity>> <<root>>{
 }
 
 'duvida para o professor, há necessidade de ter um routeRecord??'
-
 class RouteRecord <<value object>>{
     - record_date: Date
     - active: boolean
@@ -117,6 +126,7 @@ class MaintenanceRecord <<entity>> <<root>> {
     - end_date: Date
     - check_list_status: String
     - notes: String
+    - components: List<String>
 }
 }
 
