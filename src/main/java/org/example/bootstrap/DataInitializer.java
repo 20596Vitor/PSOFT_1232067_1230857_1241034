@@ -34,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
 
         if (userRepository.count() == 0) {
             try {
-                System.out.println("-> A inicializar credenciais de utilizadores de sistema.");
+                System.out.println("-> A carregar as credenciais do utilizador");
 
 
                 User admin = new User("admin", "admin123", "ADMIN");
@@ -43,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
                 userRepository.save(admin);
                 userRepository.save(operator);
 
-                System.out.println("-> Credenciais do Admin e Operator pré-carregadas com sucesso!");
+                System.out.println("-> Carregadas credenciais de admin e utilizador com sucesso");
             } catch (Exception e) {
                 System.out.println("-> Erro ao inicializar utilizadores: " + e.getMessage());
             }
