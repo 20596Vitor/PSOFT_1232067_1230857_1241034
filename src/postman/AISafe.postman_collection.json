@@ -1,0 +1,363 @@
+{
+  "info": {
+    "_postman_id": "0f1b0db2-59c2-4d31-8be0-6088984420a4",
+    "name": "AISafe",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55151782",
+    "_collection_link": "https://go.postman.co/collection/55151782-0f1b0db2-59c2-4d31-8be0-6088984420a4?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "US107 - Ver Detalhes LIS.",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/airports/LIS",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "airports",
+            "LIS"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Adicionar certificação",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/airports/LIS/certifications?type=boeing",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "airports",
+            "LIS",
+            "certifications"
+          ],
+          "query": [
+            {
+              "key": "type",
+              "value": "boeing"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Pais",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/airports/search?query=Portugal",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "airports",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "query",
+              "value": "Portugal"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "status",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/airports/LIS/status?status=CLOSED",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "airports",
+            "LIS",
+            "status"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "CLOSED"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Inserir aeroporto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 201 Created\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([201, 211]);",
+              "});",
+              "",
+              "pm.test(\"Aeroporto criado tem o código IATA correto\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.iataCode).to.eql(\"MAD\");",
+              "});",
+              "",
+              "pm.test(\"Estado inicial é OPERATIONAL\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"OPERATIONAL\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"iataCode\": \"MAD\",\n    \"name\": \"Aeroporto Adolfo Suárez Madrid-Barajas\",\n    \"city\": \"Madrid\",\n    \"country\": \"Espanha\",\n    \"type\": \"comercial\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/airports",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "airports"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login sucesso admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK - Autenticado\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Retornou o Role correto de ADMIN\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.role).to.eql(\"ADMIN\");",
+              "});",
+              "",
+              "pm.test(\"Retornou mensagem de sucesso\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.mensagem).to.include(\"sucesso\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "IATA invalido",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 400 Bad Request\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Sistema barrou e devolveu mensagem de erro\", function () {",
+              "    var responseText = pm.response.text();",
+              "    pm.expect(responseText).to.include(\"IATA\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"iataCode\": \"INVALIDO\", \n    \"name\": \"Aeroporto Errado\",\n    \"city\": \"Porto\",\n    \"country\": \"Portugal\",\n    \"airportType\": \"comercial\",\n    \"status\": \"OPERATIONAL\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/airports",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "airports"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Consultar Aeroporto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Retornou os detalhes de Lisboa\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.iataCode).to.eql(\"LIS\");",
+              "    pm.expect(jsonData.name).to.include(\"Humberto Delgado\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/airports/LIS",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "airports",
+            "LIS"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK - Estado Alterado\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"O estado mudou para CLOSED\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"CLOSED\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/airports/LIS/status?status=CLOSED",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "airports",
+            "LIS",
+            "status"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "CLOSED"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

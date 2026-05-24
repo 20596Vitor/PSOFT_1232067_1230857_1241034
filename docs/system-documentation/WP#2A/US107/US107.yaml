@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US107 Consultar Detalhes do Aeroporto
+  version: 1.0.0
+  description: Documentação para validar consulta de um aeroporto dado o IATA
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/airports/{iataCode}:
+    get:
+      summary: Consultar detalhes de um aeroporto específico
+      operationId: getAirportByIata
+      parameters:
+        - name: iataCode
+          in: path
+          required: true
+          description: Código IATA de 3 letras maiúsculas do aeroporto (ex. LIS, BCN).
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            pattern: '^[A-Z]{3}$'
+            example: "LIS"
+      responses:
+        '200':
+          description: Aeroporto encontrado com sucesso. Retorna os detalhes puros da entidade.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
+        '404':
+          description: Não foi encontrado nenhum aeroporto com o código IATA fornecido.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Aeroporto não encontrado."
+
+components:
+  schemas:
+    Airport:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+          description: Identificador único gerado automaticamente pela base de dados.
+        iataCode:
+          type: string
+          example: "LIS"
+        name:
+          type: string
+          example: "Aeroporto Humberto Delgado"
+        city:
+          type: string
+          example: "Lisboa"
+        country:
+          type: string
+          example: "Portugal"
+        airportType:
+          type: string
+          example: "comercial"
+        status:
+          type: string
+          example: "OPERATIONAL"
+        certifiedAirplaneModels:
+          type: array
+          items:
+            type: string
+          example: ["Airbus A320", "Boeing 737"]

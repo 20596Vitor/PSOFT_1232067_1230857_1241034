@@ -1,0 +1,92 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US106 Registar Aeroporto
+  version: 1.0.0
+  description: Documento para requesito funcionar de registar aeroportos
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/airports:
+    post:
+      summary: Registar um novo aeroporto no sistema
+      operationId: registerAirport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Airport'
+      responses:
+        '201':
+          description: Aeroporto criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
+        '400':
+          description: Erro de validação (ex. código IATA mal formatado ou já existente no sistema).
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Já existe um aeroporto registado com o código IATA: MAD"
+
+components:
+  schemas:
+    Airport:
+      type: object
+      required:
+        - iataCode
+        - name
+        - city
+        - country
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Identificador único gerado automaticamente pela base de dados.
+        iataCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          pattern: '^[A-Z]{3}$'
+          example: "BCN"
+          description: Código único do aeroporto com exatamente 3 letras maiúsculas.
+        name:
+          type: string
+          example: "Aeroporto Madrid"
+        city:
+          type: string
+          example: "Madrid"
+        country:
+          type: string
+          example: "Espanha"
+        airportType:
+          type: string
+          example: "comercial"
+        status:
+          type: string
+          example: "OPERATIONAL"
+        certifiedAirplaneModels:
+          type: array
+          items:
+            type: string
+          example: []
+        _links:
+          type: object
+          description: Links hipermédia para navegação (HATEOAS).
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                  example: "http://localhost:8080/api/airports/BCN"
+            update-status:
+              type: object
+              properties:
+                href:
+                  type: string
+                  example: "http://localhost:8080/api/airports/BCN/status"
