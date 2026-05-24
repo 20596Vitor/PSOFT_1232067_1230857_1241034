@@ -53,11 +53,10 @@ public class RouteController {
 
         Route updatedRoute;
 
-        // Se enviaram a flag 'active' como false, é um pedido de desativação
         if (request.active() != null && !request.active()) {
             updatedRoute = routeService.deactivateRoute(routeId);
         }
-        // Caso contrário, é uma atualização de dados
+
         else {
             updatedRoute = routeService.updateRoute(
                     routeId,
@@ -70,9 +69,6 @@ public class RouteController {
         return ResponseEntity.ok(updatedRoute);
     }
 
-    // ==========================================
-    // US113 (Lista) & US114 - Search Routes
-    // ==========================================
     @GetMapping
     public ResponseEntity<List<Route>> searchRoutes(
             @RequestParam(required = false) String origin,

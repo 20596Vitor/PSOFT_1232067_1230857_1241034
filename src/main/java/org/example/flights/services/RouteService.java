@@ -13,7 +13,7 @@ import java.util.List;
 public class RouteService {
 
     private final RouteRepository routeRepository;
-    private final AirportRepository airportRepository; // Dependência do WP2A
+    private final AirportRepository airportRepository;
 
     public RouteService(RouteRepository routeRepository, AirportRepository airportRepository) {
         this.routeRepository = routeRepository;
@@ -23,7 +23,6 @@ public class RouteService {
     @Transactional
     public Route createRoute(String originIata, String destinationIata, int estimatedTime, float minRange, int minCapacity) {
 
-        // 1. Verificar se ambos os aeroportos existem no sistema usando o repositório do teu colega
         if (airportRepository.findByIataCode(originIata).isEmpty()) {
             throw new IllegalArgumentException("O aeroporto de origem não existe: " + originIata);
         }
@@ -31,15 +30,12 @@ public class RouteService {
             throw new IllegalArgumentException("O aeroporto de destino não existe: " + destinationIata);
         }
 
-        // 2. Verificar se a rota já existe (evitar duplicados)
         if (routeRepository.existsByOriginIataCodeAndDestinationIataCode(originIata, destinationIata)) {
             throw new IllegalArgumentException("Já existe uma rota registada entre estes dois aeroportos.");
         }
 
-        // 3. Criar a entidade
         Route newRoute = new Route(originIata, destinationIata, estimatedTime, minRange, minCapacity);
 
-        // 4. Guardar na BD
         return routeRepository.save(newRoute);
     }
 

@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US114 Pesquisar Rotas
+  version: 1.0.0
+  description: Documento para o requisito funcional de pesquisar rotas de voo por aeroporto de origem, destino, ou ambos.
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/routes:
+    get:
+      summary: Pesquisar rotas de voo
+      description: Retorna uma lista de rotas filtrada pelo aeroporto de origem, destino, ou ambos. Se nenhum parâmetro for fornecido, retorna todas as rotas.
+      operationId: searchRoutes
+      parameters:
+        - name: origin
+          in: query
+          required: false
+          description: Código IATA do aeroporto de origem (ex. LIS).
+          schema:
+            type: string
+            example: "LIS"
+        - name: destination
+          in: query
+          required: false
+          description: Código IATA do aeroporto de destino (ex. OPO).
+          schema:
+            type: string
+            example: "OPO"
+      responses:
+        '200':
+          description: Lista de rotas encontradas com base nos filtros fornecidos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+
+components:
+  schemas:
+    Route:
+      type: object
+      properties:
+        routeId:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          description: ID único da rota gerado automaticamente.
+        originIataCode:
+          type: string
+          example: "LIS"
+        destinationIataCode:
+          type: string
+          example: "OPO"
+        estimatedFlightTime:
+          type: integer
+          example: 45
+        minRange:
+          type: number
+          format: float
+          example: 300.5
+        minCapacity:
+          type: integer
+          example: 100
+        active:
+          type: boolean
+          example: true
+        version:
+          type: integer
+          example: 0

@@ -1,0 +1,64 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US111 Ver Histórico da Rota
+  version: 1.0.0
+  description: Documento para o requisito funcional de consultar o histórico de alterações e estados de uma rota de voo.
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/routes/{routeId}/history:
+    get:
+      summary: Consultar o histórico de uma rota
+      description: Retorna uma lista com todas as alterações efetuadas à rota (criação, atualizações, desativações), ordenadas de forma cronológica.
+      operationId: getRouteHistory
+      parameters:
+        - name: routeId
+          in: path
+          required: true
+          description: ID único da Rota (formato UUID).
+          schema:
+            type: string
+            format: uuid
+            example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      responses:
+        '200':
+          description: Histórico retornado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RouteRecord'
+        '404':
+          description: Rota não encontrada no sistema com o ID fornecido.
+
+components:
+  schemas:
+    RouteRecord:
+      type: object
+      description: Representa um "fotografia" do estado da rota num determinado momento.
+      properties:
+        recordDate:
+          type: string
+          format: date-time
+          example: "2026-05-24T22:15:00Z"
+          description: Data e hora exatas em que o registo foi gravado.
+        active:
+          type: boolean
+          example: true
+          description: Indica se a rota estava ativa ou desativada neste momento.
+        estimatedFlightTime:
+          type: integer
+          example: 45
+          description: Tempo estimado de voo em minutos neste momento do histórico.
+        minRange:
+          type: number
+          format: float
+          example: 300.5
+          description: Alcance mínimo registado.
+        minCapacity:
+          type: integer
+          example: 100
+          description: Capacidade mínima registada.

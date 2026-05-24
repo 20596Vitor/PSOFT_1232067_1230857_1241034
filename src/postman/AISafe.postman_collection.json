@@ -1,12 +1,214 @@
 {
   "info": {
     "_postman_id": "0f1b0db2-59c2-4d31-8be0-6088984420a4",
-    "name": "AISafe",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "55151782",
-    "_collection_link": "https://go.postman.co/collection/55151782-0f1b0db2-59c2-4d31-8be0-6088984420a4?source=collection_link"
+    "name": "AISafe Completo (WP1, WP2 e WP3)",
+    "description": "Coleção global de testes automáticos para Aeronaves, Aeroportos e Rotas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "US101 - Registar Modelo de Aeronave",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"O modelo foi criado com sucesso\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.modelName).to.eql(\"737 MAX 8\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"manufacturer\": \"Boeing\",\n  \"modelName\": \"737 MAX 8\",\n  \"cruisingSpeed\": 839.0,\n  \"fuelCapacity\": 25941.0,\n  \"maxRange\": 6570.0\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/aircraft-models",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "aircraft-models"]
+        }
+      }
+    },
+    {
+      "name": "US102 - Registar Aeronave",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Matrícula associada corretamente\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.registrationNumber).to.eql(\"CS-TKA\");",
+              "});",
+              "",
+              "pm.test(\"Estado inicial é ACTIVE\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"ACTIVE\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"registrationNumber\": \"CS-TKA\",\n  \"manufacturingDate\": \"2023-01-15\",\n  \"seatingCapacity\": 189,\n  \"status\": \"ACTIVE\",\n  \"modelId\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/aircrafts",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "aircrafts"]
+        }
+      }
+    },
+    {
+      "name": "US103 - Consultar Detalhes da Aeronave",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Retornou o avião correto\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.registrationNumber).to.eql(\"CS-TKA\");",
+              "});",
+              "",
+              "pm.test(\"Contém dados do modelo embutidos\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.aircraftModel.manufacturer).to.eql(\"Boeing\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/aircrafts/CS-TKA",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "aircrafts", "CS-TKA"]
+        }
+      }
+    },
+    {
+      "name": "US104 - Pesquisar Aeronave por Filtro (Status)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Devolveu uma lista (Array)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/aircrafts?status=ACTIVE",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "aircrafts"],
+          "query": [
+            {
+              "key": "status",
+              "value": "ACTIVE"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "US105 - Atualizar Estado para Manutenção",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK - Estado Atualizado\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"O estado mudou corretamente para UNDER_MAINTENANCE\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"UNDER_MAINTENANCE\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"UNDER_MAINTENANCE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/aircrafts/CS-TKA/status",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "aircrafts", "CS-TKA", "status"]
+        }
+      }
+    },
     {
       "name": "US107 - Ver Detalhes LIS.",
       "request": {
@@ -15,15 +217,9 @@
         "url": {
           "raw": "http://localhost:8080/api/airports/LIS",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "airports",
-            "LIS"
-          ]
+          "path": ["api", "airports", "LIS"]
         }
       },
       "response": []
@@ -36,16 +232,9 @@
         "url": {
           "raw": "http://localhost:8080/api/airports/LIS/certifications?type=boeing",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "airports",
-            "LIS",
-            "certifications"
-          ],
+          "path": ["api", "airports", "LIS", "certifications"],
           "query": [
             {
               "key": "type",
@@ -64,15 +253,9 @@
         "url": {
           "raw": "http://localhost:8080/api/airports/search?query=Portugal",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "airports",
-            "search"
-          ],
+          "path": ["api", "airports", "search"],
           "query": [
             {
               "key": "query",
@@ -91,16 +274,9 @@
         "url": {
           "raw": "http://localhost:8080/api/airports/LIS/status?status=CLOSED",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "airports",
-            "LIS",
-            "status"
-          ],
+          "path": ["api", "airports", "LIS", "status"],
           "query": [
             {
               "key": "status",
@@ -132,9 +308,7 @@
               "    pm.expect(jsonData.status).to.eql(\"OPERATIONAL\");",
               "});"
             ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "type": "text/javascript"
           }
         }
       ],
@@ -153,14 +327,9 @@
         "url": {
           "raw": "http://localhost:8080/api/airports",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "airports"
-          ]
+          "path": ["api", "airports"]
         }
       },
       "response": []
@@ -186,9 +355,7 @@
               "    pm.expect(jsonData.mensagem).to.include(\"sucesso\");",
               "});"
             ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "type": "text/javascript"
           }
         }
       ],
@@ -207,15 +374,9 @@
         "url": {
           "raw": "http://localhost:8080/api/auth/login",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "auth",
-            "login"
-          ]
+          "path": ["api", "auth", "login"]
         }
       },
       "response": []
@@ -236,9 +397,7 @@
               "    pm.expect(responseText).to.include(\"IATA\");",
               "});"
             ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "type": "text/javascript"
           }
         }
       ],
@@ -257,14 +416,9 @@
         "url": {
           "raw": "http://localhost:8080/api/airports",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "airports"
-          ]
+          "path": ["api", "airports"]
         }
       },
       "response": []
@@ -286,9 +440,7 @@
               "    pm.expect(jsonData.name).to.include(\"Humberto Delgado\");",
               "});"
             ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "type": "text/javascript"
           }
         }
       ],
@@ -298,21 +450,15 @@
         "url": {
           "raw": "http://localhost:8080/api/airports/LIS",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "airports",
-            "LIS"
-          ]
+          "path": ["api", "airports", "LIS"]
         }
       },
       "response": []
     },
     {
-      "name": "New Request",
+      "name": "New Request (PATCH status)",
       "event": [
         {
           "listen": "test",
@@ -327,9 +473,7 @@
               "    pm.expect(jsonData.status).to.eql(\"CLOSED\");",
               "});"
             ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
+            "type": "text/javascript"
           }
         }
       ],
@@ -339,20 +483,246 @@
         "url": {
           "raw": "http://localhost:8080/api/airports/LIS/status?status=CLOSED",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "airports",
-            "LIS",
-            "status"
-          ],
+          "path": ["api", "airports", "LIS", "status"],
           "query": [
             {
               "key": "status",
               "value": "CLOSED"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "US110 - Criar Rota",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Rota criada com sucesso e ID guardado\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"routeId\");",
+              "    pm.environment.set(\"routeId\", jsonData.routeId);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"originIata\": \"LIS\",\n  \"destinationIata\": \"MAD\",\n  \"estimatedTime\": 90,\n  \"minRange\": 500.0,\n  \"minCapacity\": 150\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/routes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "routes"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "US113 - Ver Detalhes Rota",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Retorna a rota com origem LIS\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.originIataCode).to.eql(\"LIS\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/routes/{{routeId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "routes", "{{routeId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "US112 - Atualizar Rota",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Valores atualizados corretamente\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.estimatedFlightTime).to.eql(100);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"estimatedTime\": 100,\n  \"minRange\": 550.0,\n  \"minCapacity\": 180\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/routes/{{routeId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "routes", "{{routeId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "US112 - Desativar Rota",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Rota ficou desativada\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.active).to.be.false;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"active\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/routes/{{routeId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "routes", "{{routeId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "US111 - Ver Histórico Rota",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Histórico retorna lista de alterações\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+              "    pm.expect(jsonData.length).to.be.above(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/routes/{{routeId}}/history",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "routes", "{{routeId}}", "history"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "US114 - Pesquisar Rotas",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Retorna um array com resultados\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/routes?origin=LIS",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "routes"],
+          "query": [
+            {
+              "key": "origin",
+              "value": "LIS"
             }
           ]
         }

@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US112 Atualizar ou Desativar Rota
+  version: 1.0.0
+  description: Documento para o requisito funcional de atualizar as capacidades operacionais de uma rota de voo ou proceder à sua desativação.
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/routes/{routeId}:
+    patch:
+      summary: Atualizar ou Desativar Rota
+      description: Permite alterar as capacidades da rota (tempo estimado, alcance, capacidade mínima) ou desativá-la enviando o parâmetro "active" como false.
+      operationId: updateOrDeactivateRoute
+      parameters:
+        - name: routeId
+          in: path
+          required: true
+          description: ID único da Rota (formato UUID).
+          schema:
+            type: string
+            format: uuid
+            example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRouteRequest'
+      responses:
+        '200':
+          description: Rota atualizada ou desativada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+        '400':
+          description: Dados de atualização inválidos (ex. valores menores ou iguais a zero).
+        '404':
+          description: Rota não encontrada no sistema com o ID fornecido.
+
+components:
+  schemas:
+    UpdateRouteRequest:
+      type: object
+      description: Objeto com os dados a atualizar. Pode enviar os valores a alterar ou apenas o booleano para desativar.
+      properties:
+        estimatedTime:
+          type: integer
+          example: 50
+          description: Novo tempo estimado de voo em minutos.
+        minRange:
+          type: number
+          format: float
+          example: 300.5
+          description: Novo alcance mínimo exigido.
+        minCapacity:
+          type: integer
+          example: 120
+          description: Nova capacidade mínima de passageiros exigida.
+        active:
+          type: boolean
+          example: false
+          description: Enviar "false" para desativar a rota.
+
+    Route:
+      type: object
+      properties:
+        routeId:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        originIataCode:
+          type: string
+          example: "LIS"
+        destinationIataCode:
+          type: string
+          example: "OPO"
+        estimatedFlightTime:
+          type: integer
+          example: 50
+        minRange:
+          type: number
+          format: float
+          example: 300.5
+        minCapacity:
+          type: integer
+          example: 120
+        active:
+          type: boolean
+          example: false
+        version:
+          type: integer
+          example: 1
+          description: Versão do registo para controlo de concorrência (optimistic locking).

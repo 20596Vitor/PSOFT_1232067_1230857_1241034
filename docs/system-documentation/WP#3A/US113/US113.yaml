@@ -1,0 +1,94 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US113 Ver Rotas e Detalhes
+  version: 1.0.0
+  description: Documento para o requisito funcional de consultar todas as rotas com origem num aeroporto específico e ver os detalhes completos de uma rota.
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/routes:
+    get:
+      summary: Ver todas as rotas a partir de um aeroporto
+      description: Retorna uma lista de rotas que partem do aeroporto de origem especificado.
+      operationId: getRoutesFromAirport
+      parameters:
+        - name: origin
+          in: query
+          required: true
+          description: Código IATA do aeroporto de origem (ex. LIS).
+          schema:
+            type: string
+            example: "LIS"
+      responses:
+        '200':
+          description: Lista de rotas retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+
+  /api/routes/{routeId}:
+    get:
+      summary: Ver detalhes completos de uma rota
+      description: Retorna toda a informação de uma rota específica através do seu ID.
+      operationId: getRouteDetails
+      parameters:
+        - name: routeId
+          in: path
+          required: true
+          description: ID único da Rota (formato UUID).
+          schema:
+            type: string
+            format: uuid
+            example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      responses:
+        '200':
+          description: Detalhes da rota retornados com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+        '404':
+          description: Rota não encontrada no sistema com o ID fornecido.
+
+components:
+  schemas:
+    Route:
+      type: object
+      properties:
+        routeId:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        originIataCode:
+          type: string
+          example: "LIS"
+          description: Código IATA da origem.
+        destinationIataCode:
+          type: string
+          example: "OPO"
+          description: Código IATA do destino.
+        estimatedFlightTime:
+          type: integer
+          example: 45
+          description: Tempo estimado de voo em minutos.
+        minRange:
+          type: number
+          format: float
+          example: 300.5
+          description: Alcance mínimo exigido.
+        minCapacity:
+          type: integer
+          example: 100
+          description: Capacidade mínima de passageiros.
+        active:
+          type: boolean
+          example: true
+          description: Estado da rota (ativa ou inativa).
+        version:
+          type: integer
+          example: 0
