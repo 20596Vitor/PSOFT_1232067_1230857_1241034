@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  description: Documentação para validar consulta de um aeroporto dado o IATA
+  title: AlSafe API - US107 Consultar Detalhes do Aeroporto
+  version: 1.0.0
+servers:
+- description: Servidor de Desenvolvimento Local
+  url: http://localhost:8080
+paths:
+  /api/airports/{iataCode}:
+    get:
+      operationId: getAirportByIata
+      parameters:
+      - description: "Código IATA de 3 letras maiúsculas do aeroporto (ex. LIS, BCN)."
+        explode: false
+        in: path
+        name: iataCode
+        required: true
+        schema:
+          example: LIS
+          maxLength: 3
+          minLength: 3
+          pattern: "^[A-Z]{3}$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
+          description: Aeroporto encontrado com sucesso. Retorna os detalhes puros
+            da entidade.
+        "404":
+          content:
+            text/plain:
+              schema:
+                example: Aeroporto não encontrado.
+                type: string
+          description: Não foi encontrado nenhum aeroporto com o código IATA fornecido.
+      summary: Consultar detalhes de um aeroporto específico
+      x-accepts:
+      - application/json
+      - text/plain
+components:
+  schemas:
+    Airport:
+      example:
+        country: Portugal
+        iataCode: LIS
+        city: Lisboa
+        name: Aeroporto Humberto Delgado
+        id: 2
+        airportType: comercial
+        status: OPERATIONAL
+        certifiedAirplaneModels:
+        - Airbus A320
+        - Boeing 737
+      properties:
+        id:
+          description: Identificador único gerado automaticamente pela base de dados.
+          example: 2
+          type: integer
+        iataCode:
+          example: LIS
+          type: string
+        name:
+          example: Aeroporto Humberto Delgado
+          type: string
+        city:
+          example: Lisboa
+          type: string
+        country:
+          example: Portugal
+          type: string
+        airportType:
+          example: comercial
+          type: string
+        status:
+          example: OPERATIONAL
+          type: string
+        certifiedAirplaneModels:
+          example:
+          - Airbus A320
+          - Boeing 737
+          items:
+            type: string
+          type: array
+      type: object
+
