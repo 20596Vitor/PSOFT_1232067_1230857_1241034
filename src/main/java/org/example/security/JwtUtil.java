@@ -14,7 +14,7 @@ import java.util.Date;
 public class JwtUtil {
 
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long EXPIRATION_MS = 86_400_000; // 24 horas
+    private static final long EXPIRATION_MS = 86_400_000;
 
     public String generateToken(String username, String role) {
         return Jwts.builder()
