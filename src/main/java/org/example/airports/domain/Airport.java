@@ -19,6 +19,13 @@ public class Airport {
     @Enumerated(EnumType.STRING)
     private AirportStatus status;
 
+    @Embedded
+    private AirportGate gate;
+    @Embedded
+    private AirportTerminal terminal;
+    @Embedded
+    private AirportService service;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "airport_certified_models", joinColumns = @JoinColumn(name = "airport_id"))
     @Column(name = "airplane_model")
@@ -26,13 +33,15 @@ public class Airport {
 
     public Airport() {}
 
-    public Airport(String iataCode, String name, String city, String country,String type, AirportStatus status) {
+    public Airport(String iataCode, String name, String city, String country,String type, AirportStatus status, AirportGate gate, AirportTerminal terminal) {
         this.iataCode = iataCode;
         this.name = name;
         this.city = city;
         this.country = country;
         this.type = type;
         this.status = status;
+        this.gate = gate;
+        this.terminal = terminal;
     }
 
     public void addAirplaneCertification(String airplaneModel) {
