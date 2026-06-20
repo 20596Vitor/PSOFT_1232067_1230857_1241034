@@ -85,5 +85,12 @@ public class Aircraft {
     public void setAircraftModel(AircraftModel aircraftModel) {
         this.aircraftModel = aircraftModel;
     }
+    private Double totalOperationalHours = 0.0;
+    public Double getTotalOperationalHours() {
+        return totalOperationalHours;
+    }
+    public void setTotalOperationalHours(Double totalOperationalHours) {
+        this.totalOperationalHours = totalOperationalHours;
+    }
 }
 
