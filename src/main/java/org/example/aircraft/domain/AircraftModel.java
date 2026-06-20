@@ -28,6 +28,16 @@ public class AircraftModel {
     @Column(name = "technical_diagram")
     private String technicalDiagram;
 
+    @Lob
+    private byte[] image;
+
+    public byte[] getImage() {
+        return image;
+    }
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
     protected AircraftModel() {}
 
     public AircraftModel(String manufacturer, String modelName, Float cruisingSpeed, Float fuelCapacity, Float maxRange) {

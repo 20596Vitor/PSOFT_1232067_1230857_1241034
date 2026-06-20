@@ -69,8 +69,8 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (airportRepository.count() == 0) {
-            Airport lisboa = new Airport("LIS", "Aeroporto Humberto Delgado", "Lisboa", "Portugal", "military", AirportStatus.OPERATIONAL);
-            Airport porto = new Airport("OPO", "Aeroporto Francisco Sá Carneiro", "Porto", "Portugal", "comercial", AirportStatus.OPERATIONAL);
+            Airport lisboa = new Airport("LIS", "Aeroporto Humberto Delgado", "Lisboa", "Portugal", "military", AirportStatus.OPERATIONAL, null, null);
+            Airport porto = new Airport("OPO", "Aeroporto Francisco Sá Carneiro", "Porto", "Portugal", "comercial", AirportStatus.OPERATIONAL, null,null);
 
             airportRepository.save(lisboa);
             airportRepository.save(porto);

@@ -1,0 +1,32 @@
+@startuml
+title Register an aircraft model - Class Diagram
+
+package "Aircraft Aggregate"{
+
+    class AircraftModel <<root>>{
+           - manufacturer: String
+           - model_name: String
+           - max_seating_capacity: int
+           - fuel_capacity: float
+           - max_range: float
+           - cruising_speed: float
+           ---
+           +AircraftModel(manufacturer, modelName, maxSeatingCapacity, fuelCapacity, maxRange, cruisingSpeed)
+    }
+
+    class RegisterAircraftModelService <<Domain Service>>{
+           ---
+           +registerAircraftModel(String manufacturer, String modelName, int maxSeatingCapacity, float fuelCapacity, float maxRange, float cruisingSpeed): AircraftModel
+    }
+
+   interface AircraftModelRepository{
+           ---
+           + boolean existsByModelName(String modelName)
+           + AircraftModel save(AircraftModel)
+   }
+
+    RegisterAircraftModelService ..> AircraftModel : creates >
+    RegisterAircraftModelService ..> AircraftModelRepository : uses >
+}
+
+@enduml

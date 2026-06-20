@@ -1,0 +1,39 @@
+@startuml
+autonumber
+title US103 - View Aircraft Details — Sequence Diagram
+
+autoactivate on
+
+actor "Backoffice Operator / ATCC" as User
+participant "AircraftController" as Ctrl
+participant "ViewAircraftUseCase" as UC
+participant "ViewAircraftService" as Service
+database "AircraftRepository" as Repo
+
+User -> Ctrl : GET /aircrafts/{registrationNumber}
+
+Ctrl -> Ctrl : extract username & roles from JWT
+alt User has authorization (Role: Backoffice Operator OR ATCC)
+    Ctrl -> UC : execute(registrationNumber)
+
+    UC -> Service : getAircraftByRegistrationNumber(registrationNumber)
+
+    Service -> Repo : findById(registrationNumber)
+    return optAircraft
+
+    alt Aircraft is found
+        Service --> UC : return aircraft
+        UC --> Ctrl : return aircraft
+        Ctrl --> User : 200 OK\n{ registrationNumber, modelName, seatingCapacity, status, manufacturingDate, ... }
+
+    else Aircraft is NOT found
+        Service --> UC : throw EntityNotFoundException("Aircraft not found")
+        UC --> Ctrl : throw ResponseStatusException(404, "Not Found")
+        Ctrl --> User : 404 Not Found\n{ message: "Aircraft with the specified registration number does not exist" }
+    end
+
+else User does not have authorization
+    Ctrl --> User : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US103 Consultar Detalhes da Aeronave
+  version: 1.0.0
+  description: Documento para o requisito funcional de pesquisar detalhes completos de uma aeronave pela matrícula.
+servers:
+  - url: http://localhost:8080
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /api/aircrafts/{registrationNumber}:
+    get:
+      summary: Consultar detalhes de uma aeronave específica
+      operationId: getAircraftDetails
+      parameters:
+        - name: registrationNumber
+          in: path
+          required: true
+          description: Matrícula única da aeronave (ex. CS-TKA)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes da aeronave encontrados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aircraft'
+        '404':
+          description: Aeronave não encontrada.
+
+components:
+  schemas:
+    Aircraft:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        registrationNumber:
+          type: string
+          example: "CS-TKA"
+        manufacturingDate:
+          type: string
+          format: date
+          example: "2023-01-15"
+        seatingCapacity:
+          type: integer
+          example: 189
+        status:
+          type: string
+          example: "ACTIVE"
+        aircraftModel:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            manufacturer:
+              type: string
+              example: "Boeing"
+            modelName:
+              type: string
+              example: "737 MAX 8"
+            cruisingSpeed:
+              type: number
+              example: 839.0
+            fuelCapacity:
+              type: number
+              example: 25941.0
+            maxRange:
+              type: number
+              example: 6570.0
