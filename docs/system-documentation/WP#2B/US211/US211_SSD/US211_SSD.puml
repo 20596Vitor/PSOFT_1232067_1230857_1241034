@@ -1,0 +1,15 @@
+@startuml
+autonumber
+
+title US211 - Group Airports by Country — Simplified Sequence Diagram
+
+actor "Air Transport Company Collaborator" as ATCC
+participant ":System" as Sys
+
+ATCC -> Sys: Request airports grouped by country or region
+Sys --> ATCC: Request filtering parameter (country)
+
+ATCC -> Sys: Inserts requested country name
+Sys --> ATCC: Retrieves and displays the list of airports in that country
+
+@enduml

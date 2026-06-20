@@ -1,0 +1,31 @@
+@startuml
+title US210: Busiest Airports Statistics - Class Diagram
+
+package "Airport Aggregate" {
+    class Airport <<root>> {
+           - iataCode: String
+           - name: String
+    }
+
+    class EnhancedAirportService <<Domain Service>> {
+           ---
+           + getBusiestAirportsReport(): List<AirportRouteCountDTO>
+    }
+
+    interface AirportRepository {
+           ---
+           + List<Object[]> findBusiestAirportsCustomQuery()
+    }
+}
+
+package "Route Aggregate" {
+    class FlightRoute <<root>> {
+           - routeId: Long
+    }
+}
+FlightRoute "0..*" --> "1" Airport : @ManyToOne
+
+EnhancedAirportService ..> Airport : analyzes >
+EnhancedAirportService ..> AirportRepository : uses >
+
+@enduml

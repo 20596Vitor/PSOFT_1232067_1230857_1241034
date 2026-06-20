@@ -1,0 +1,20 @@
+@startuml
+title US210: Busiest Airports Statistics - Domain Model
+
+package "Airport Aggregate" {
+    entity Airport <<Aggregate Root>> <<Entity>> {
+           - iataCode [Identity]
+           - name
+    }
+}
+
+package "Route Aggregate" {
+    entity FlightRoute <<Aggregate Root>> <<Entity>> {
+           - routeId [Identity]
+    }
+}
+
+Airport "1" <-- "0..*" FlightRoute : counted for activity statistics <
+
+
+@enduml

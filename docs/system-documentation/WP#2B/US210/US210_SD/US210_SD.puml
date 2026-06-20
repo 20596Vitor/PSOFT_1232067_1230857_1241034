@@ -1,0 +1,31 @@
+@startuml
+autonumber
+title US210 - Busiest Airports Statistics — Sequence Diagram
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant "AirportController" as Ctrl
+participant "GetBusiestAirportsUseCase" as UC
+participant "EnhancedAirportService" as Service
+database "AirportRepository" as Repo
+
+BO -> Ctrl : GET /api/airports/statistics/busiest
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has "Backoffice Operator" authorization
+    Ctrl -> UC : execute()
+
+    UC -> Service : getBusiestAirportsReport()
+
+    Service -> Repo : findBusiestAirportsCustomQuery()
+    return rawAggregationData
+
+    return statisticalReportList
+    return 200 OK\n[ { iataCode, airportName, routesCount, _links }, ... ]
+
+else User does not have authorization
+    Ctrl --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+title US211: Group Airports by Country - Domain Model
+
+package "Airport Aggregate" {
+    entity Airport <<Aggregate Root>> <<Entity>> {
+           - iataCode [Identity]
+           - name
+           - city
+           - country
+           - status
+    }
+}
+
+
+@enduml

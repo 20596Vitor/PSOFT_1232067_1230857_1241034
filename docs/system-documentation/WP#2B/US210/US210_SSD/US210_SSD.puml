@@ -1,0 +1,12 @@
+@startuml
+autonumber
+
+title US210 - Busiest Airports Statistics — Simplified Sequence Diagram
+
+actor "Backoffice Operator" as BO
+participant ":System" as Sys
+
+BO -> Sys: Request statistics on the busiest airports by number of routes
+Sys --> BO: Calculates route volumes, sorts and displays the report of busiest airports
+
+@enduml

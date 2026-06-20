@@ -1,0 +1,27 @@
+@startuml
+title US211: Group Airports by Country - Class Diagram
+
+package "Airport Aggregate" {
+    class Airport <<root>> {
+           - iataCode: String
+           - name: String
+           - city: String
+           - country: String
+           - status: AirportStatus
+    }
+
+    class EnhancedAirportService <<Domain Service>> {
+           ---
+           + getAirportsByCountry(String country): List<Airport>
+    }
+
+    interface AirportRepository {
+           ---
+           + List<Airport> findByCountry(String country)
+    }
+}
+
+EnhancedAirportService ..> Airport : filters >
+EnhancedAirportService ..> AirportRepository : uses >
+
+@enduml
