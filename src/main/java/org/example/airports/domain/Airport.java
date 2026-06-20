@@ -30,14 +30,12 @@ public class Airport {
     @Embedded
     private AirportService service;
 
-    // US208 - contact info and operational hours
     @Embedded
     private ContactInfo contactInfo;
 
     @Embedded
     private OperationalHours operationalHours;
 
-    // US106a - certified airplane models
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "airport_certified_models", joinColumns = @JoinColumn(name = "airport_id"))
     @Column(name = "airplane_model")
@@ -63,8 +61,6 @@ public class Airport {
             this.certifiedAirplaneModels.add(modelUpper);
         }
     }
-
-    // US208 - update operational data
     public void updateOperationalData(OperationalHours operationalHours, ContactInfo contactInfo) {
         if (operationalHours != null) this.operationalHours = operationalHours;
         if (contactInfo != null) this.contactInfo = contactInfo;

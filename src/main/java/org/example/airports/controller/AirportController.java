@@ -26,16 +26,12 @@ public class AirportController {
         this.registerAirportUseCase = registerAirportUseCase;
         this.updateAirportDetailsUseCase = updateAirportDetailsUseCase;
     }
-
-    // US208 request DTO
     public record UpdateAirportDetailsRequest(
             String email,
             String phoneNumber,
-            String openTime,   // formato "HH:mm"
-            String closeTime   // formato "HH:mm"
+            String openTime,
+            String closeTime
     ) {}
-
-    // US106 / US207 - Register airport
     @PostMapping
     public ResponseEntity<?> registerAirport(@RequestBody Airport airport) {
         if (airport.getIataCode() == null || airport.getIataCode().trim().length() != 3) {
@@ -55,8 +51,6 @@ public class AirportController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    // US109 - Update status
     @PatchMapping("/{iataCode}/status")
     public ResponseEntity<?> updateStatus(
             @PathVariable String iataCode,
