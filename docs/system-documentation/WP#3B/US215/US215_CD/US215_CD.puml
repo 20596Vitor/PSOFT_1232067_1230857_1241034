@@ -1,0 +1,43 @@
+@startuml
+title US215 - Class Diagram
+hide circle
+skinparam classAttributeIconSize 0
+
+class RouteController {
+  + getTotalDistance(): ResponseEntity
+}
+
+class CalculateTotalDistanceUseCase {
+  + execute(): double
+}
+
+class RouteService {
+  + calculateTotalNetworkDistance(): double
+}
+
+class DistanceCalculator <<utility>> {
+  + calculateDistance(coords1: String, coords2: String): double
+}
+
+interface RouteRepository {
+  + findAllActiveRoutes(): List<Route>
+}
+
+class Route <<entity>> <<root>> {
+  - route_id: String
+  - active: boolean
+}
+
+class Airport <<entity>> <<root>> {
+  - iata_code: String
+  - coordinates: String
+}
+
+RouteController --> CalculateTotalDistanceUseCase
+CalculateTotalDistanceUseCase --> RouteService
+RouteService --> RouteRepository
+RouteService --> DistanceCalculator
+RouteRepository ..> Route : returns
+Route --> Airport : Origin/Destination
+
+@enduml

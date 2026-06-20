@@ -1,0 +1,55 @@
+@startuml
+autonumber
+title US216 - Search Alternative Routes — Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as Actor
+participant "RouteController" as Ctrl
+participant "SearchAlternativeRoutesUseCase" as UC
+participant "RouteService" as Service
+participant "PathFinderService" as PathFinder
+database "AirportRepository" as AirportRepo
+database "RouteRepository" as RouteRepo
+
+Actor -> Ctrl : GET /routes/alternatives?origin={iata1}&destination={iata2}
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has authorization (ATCC Role)
+    Ctrl -> UC : execute(originIata, destIata)
+
+    UC -> Service : findAlternatives(originIata, destIata)
+
+    Service -> AirportRepo : existsById(originIata)
+    return originExists
+    Service -> AirportRepo : existsById(destIata)
+    return destExists
+
+    alt Origin OR Destination does NOT exist
+        Service --> UC : throw EntityNotFoundException("Airport(s) not found")
+        UC --> Ctrl : throw ResponseStatusException(404, "Not Found")
+        Ctrl --> Actor : 404 Not Found\n{ message: "Origin or Destination Airport does not exist" }
+    else Both Airports exist
+
+        Service -> RouteRepo : findAllActiveRoutes()
+        return allActiveRoutes
+
+        Service -> PathFinder : findPaths(originIata, destIata, allActiveRoutes)
+        note right of PathFinder
+            Executes a graph traversal algorithm
+            (e.g., BFS or DFS) to find valid
+            indirect connections up to a max depth.
+        end note
+        return alternativePathsList
+
+        return alternativePathsList
+
+        Ctrl -> Ctrl : map to DTOs and add HATEOAS links
+        return 200 OK\n{ alternatives: [...], _links }
+    end
+
+else User does not have authorization
+    Ctrl --> Actor : 403 Forbidden\n{ message: "Not authorized" }
+end
+
+@enduml

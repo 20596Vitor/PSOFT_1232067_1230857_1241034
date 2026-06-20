@@ -1,0 +1,17 @@
+@startuml
+autonumber
+title US215 - System Sequence Diagram (SSD)
+
+actor "ATCC" as Actor
+participant "System" as Sys
+
+autoactivate on
+
+Actor -> Sys : GET /routes/total-distance
+alt Successful Calculation
+    Sys --> Actor : 200 OK\n{ total_distance: 45678.5, unit: "km", _links }
+else Error (e.g. invalid coordinates)
+    Sys --> Actor : 500 Internal Server Error
+end
+
+@enduml

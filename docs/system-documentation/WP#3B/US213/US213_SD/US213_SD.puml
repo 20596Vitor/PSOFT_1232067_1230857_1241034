@@ -1,0 +1,43 @@
+@startuml
+autonumber
+title US213 - View Scheduled Flights for Aircraft — Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as Actor
+participant "FlightController" as Ctrl
+participant "ListScheduledFlightsUseCase" as UC
+participant "FlightService" as Service
+database "AircraftRepository" as AircraftRepo
+database "FlightRepository" as FlightRepo
+
+Actor -> Ctrl : GET /flights?aircraftRegistration={id}&status=scheduled&page=0&size=10
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has authorization (ATCC Role)
+    Ctrl -> UC : execute(registration_ID, pageable)
+
+    UC -> Service : getScheduledFlightsByAircraft(registration_ID, pageable)
+
+    Service -> AircraftRepo : existsById(registration_ID)
+    return exists
+
+    alt Aircraft does NOT exist
+        Service --> UC : throw EntityNotFoundException("Aircraft not found")
+        UC --> Ctrl : throw ResponseStatusException(404, "Not Found")
+        Ctrl --> Actor : 404 Not Found\n{ message: "Aircraft not registered" }
+    else Aircraft exists
+        Service -> FlightRepo : findByAircraftRegistrationAndStatus(registration_ID, FlightStatus.scheduled, pageable)
+        return flightPage (List of Flights + pagination data)
+
+        return flightPage
+
+        Ctrl -> Ctrl : map to DTOs and add HATEOAS links
+        return 200 OK\n{ flights: [...], pageable, _links }
+    end
+
+else User does not have authorization
+    Ctrl --> Actor : 403 Forbidden\n{ message: "Not authorized" }
+end
+
+@enduml

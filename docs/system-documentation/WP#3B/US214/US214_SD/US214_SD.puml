@@ -1,0 +1,54 @@
+@startuml
+autonumber
+title US214 - List Active Routes — Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as Actor
+participant "RouteController" as Ctrl
+participant "ListActiveRoutesUseCase" as UC
+participant "RouteService" as Service
+database "RouteRepository" as RouteRepo
+
+Actor -> Ctrl : GET /routes?active=true&sortBy={criteria}&page=0&size=10
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has authorization (ATCC Role)
+
+    Ctrl -> Ctrl : validate sortBy parameter\n(must be 'popularity' or 'distance')
+
+    alt Invalid Sort Parameter
+        Ctrl --> Actor : 400 Bad Request\n{ message: "Invalid sort criteria" }
+    else Valid Sort Parameter
+        Ctrl -> UC : execute(sortBy, pageable)
+
+        UC -> Service : getActiveRoutes(sortBy, pageable)
+
+        alt sortBy == "popularity"
+            Service -> RouteRepo : findActiveRoutesOrderByPopularityDesc(pageable)
+            note right of RouteRepo
+                Query joins Flight table and
+                groups by Route to count usage.
+            end note
+            return routePage
+
+        else sortBy == "distance"
+            Service -> RouteRepo : findActiveRoutesOrderByDistance(pageable)
+            note right of RouteRepo
+                Distance is calculated using Origin
+                and Destination Airport coordinates.
+            end note
+            return routePage
+        end
+
+        return routePage
+
+        Ctrl -> Ctrl : map to DTOs and add HATEOAS links
+        return 200 OK\n{ routes: [...], pageable, _links }
+    end
+
+else User does not have authorization
+    Ctrl --> Actor : 403 Forbidden\n{ message: "Not authorized" }
+end
+
+@enduml

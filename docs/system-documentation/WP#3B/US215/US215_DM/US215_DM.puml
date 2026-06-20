@@ -1,0 +1,25 @@
+@startuml
+hide circle
+hide methods
+skinparam classAttributeIconSize 0
+title US215 - Domain Model Excerpt
+
+class Route <<entity>> <<root>>{
+    - route_id: String
+    - active: boolean
+}
+
+class Airport <<entity>> <<root>> {
+    - iata_code: String
+    - coordinates: String
+}
+
+Route --> "2" Airport : "Origin / Destination"
+
+note right of Route
+  Total distance = SUM(distance
+  between origin and destination
+  for all routes)
+end note
+
+@enduml

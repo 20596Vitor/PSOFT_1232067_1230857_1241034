@@ -1,0 +1,17 @@
+@startuml
+autonumber
+title US212 - System Sequence Diagram (SSD)
+
+actor "ATCC" as Actor
+participant "System" as Sys
+
+autoactivate on
+
+Actor -> Sys : POST /flights\n{ route_id, registration_ID, scheduled_datetime }
+alt Validation Success
+    Sys --> Actor : 201 Created\n{ flight_id, route_id, registration_ID, scheduled_datetime, status: "scheduled", _links }
+else Validation Failure (e.g., unavailable, constraints not met)
+    Sys --> Actor : 409 Conflict / 400 Bad Request\n{ error message }
+end
+
+@enduml

@@ -1,0 +1,24 @@
+@startuml
+hide circle
+hide methods
+skinparam classAttributeIconSize 0
+title US216 - Domain Model Excerpt
+
+class Route <<entity>> <<root>>{
+    - route_id: String
+    - active: boolean
+}
+
+class Airport <<entity>> <<root>> {
+    - iata_code: String
+}
+
+Route --> "2" Airport : "Origin / Destination"
+
+note right of Route
+  Alternative paths consist of a
+  sequence of active Routes
+  connecting Origin to Destination.
+end note
+
+@enduml

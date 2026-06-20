@@ -1,0 +1,47 @@
+@startuml
+title US216 - Class Diagram
+hide circle
+skinparam classAttributeIconSize 0
+
+class RouteController {
+  + searchAlternatives(origin: String, dest: String): ResponseEntity
+}
+
+class SearchAlternativeRoutesUseCase {
+  + execute(origin: String, dest: String): List<List<Route>>
+}
+
+class RouteService {
+  + findAlternatives(origin: String, dest: String): List<List<Route>>
+}
+
+class PathFinderService <<utility>> {
+  + findPaths(origin: String, dest: String, activeRoutes: List<Route>): List<List<Route>>
+}
+
+interface RouteRepository {
+  + findAllActiveRoutes(): List<Route>
+}
+
+interface AirportRepository {
+  + existsById(iata: String): boolean
+}
+
+class Route <<entity>> <<root>> {
+  - route_id: String
+  - active: boolean
+}
+
+class Airport <<entity>> <<root>> {
+  - iata_code: String
+}
+
+RouteController --> SearchAlternativeRoutesUseCase
+SearchAlternativeRoutesUseCase --> RouteService
+RouteService --> RouteRepository
+RouteService --> AirportRepository
+RouteService --> PathFinderService
+RouteRepository ..> Route : returns
+Route --> Airport : Origin/Destination
+
+@enduml

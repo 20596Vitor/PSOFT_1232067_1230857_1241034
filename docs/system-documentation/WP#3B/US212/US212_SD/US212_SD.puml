@@ -1,0 +1,66 @@
+@startuml
+autonumber
+title US212 - Schedule Flight — Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as Actor
+participant "FlightController" as Ctrl
+participant "ScheduleFlightUseCase" as UC
+participant "FlightService" as Service
+database "RouteRepository" as RouteRepo
+database "AircraftRepository" as AircraftRepo
+database "FlightRepository" as FlightRepo
+
+Actor -> Ctrl : POST /flights\n{ route_id, registration_ID, scheduled_datetime }
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has authorization (ATCC Role)
+    Ctrl -> UC : execute(route_id, registration_ID, scheduled_datetime)
+
+    UC -> Service : createScheduledFlight(route_id, registration_ID, scheduled_datetime)
+
+    Service -> RouteRepo : findById(route_id)
+    return route (or throws 404)
+
+    Service -> AircraftRepo : findById(registration_ID)
+    return aircraft (or throws 404)
+
+    Service -> Service : validateConstraints(aircraft, route)
+    note right of Service
+        Checks:
+        1. aircraft.range >= route.min_range
+        2. aircraft.seating_capacity >= route.min_capacity
+        3. aircraft.status != under_maintenance
+    end note
+
+    alt Constraints NOT met
+        Service --> UC : throw IllegalArgumentException("Aircraft does not meet route constraints")
+        UC --> Ctrl : throw ResponseStatusException(400, "Bad Request")
+        Ctrl --> Actor : 400 Bad Request\n{ message: "Constraints validation failed" }
+    else Constraints met
+
+        Service -> FlightRepo : findOverlappingFlights(registration_ID, scheduled_datetime)
+        return overlaps
+
+        alt Aircraft has overlapping flights
+            Service --> UC : throw IllegalStateException("Aircraft is already booked")
+            UC --> Ctrl : throw ResponseStatusException(409, "Conflict")
+            Ctrl --> Actor : 409 Conflict\n{ message: "Aircraft unavailable at given datetime" }
+        else Aircraft is available
+
+            Service -> Flight ** : new Flight(route_id, registration_ID, scheduled_datetime, FlightStatus.scheduled)
+
+            Service -> FlightRepo : save(flight)
+            return flight (persisted)
+
+            return flight
+            return 201 Created\n{ flight_id, _links }
+        end
+    end
+
+else User does not have authorization
+    Ctrl --> Actor : 403 Forbidden\n{ message: "Not authorized" }
+end
+
+@enduml

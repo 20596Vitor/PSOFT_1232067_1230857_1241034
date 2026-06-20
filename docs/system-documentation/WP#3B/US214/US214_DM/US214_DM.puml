@@ -1,0 +1,34 @@
+@startuml
+hide circle
+hide methods
+skinparam classAttributeIconSize 0
+title US214 - Domain Model Excerpt
+
+class Route <<entity>> <<root>>{
+    - route_id: String
+    - active: boolean
+}
+
+class Flight <<entity>> <<root>> {
+    - flight_id: String
+}
+
+class Airport <<entity>> <<root>> {
+    - iata_code: String
+    - coordinates: String
+}
+
+Route --> "2" Airport : "Origin / Destination"
+Flight --> Route : "does"
+
+note right of Flight
+  Popularity = Count of Flights
+  per Route
+end note
+
+note bottom of Airport
+  Distance is calculated based
+  on Airport coordinates
+end note
+
+@enduml

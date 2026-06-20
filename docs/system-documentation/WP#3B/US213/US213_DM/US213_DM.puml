@@ -1,0 +1,27 @@
+@startuml
+hide circle
+hide methods
+skinparam classAttributeIconSize 0
+title US213 - Domain Model Excerpt
+
+class Aircraft <<entity>> <<root>> {
+    - registration_ID: String
+}
+
+class Flight <<entity>> <<root>> {
+    - flight_id: String
+    - scheduled_datetime: Date
+}
+
+class FlightStatus <<enum>> {
+    - scheduled: int
+    - flying: int
+    - delayed: int
+    - completed: int
+    - canceled: int
+}
+
+Flight *--> FlightStatus
+Flight --> Aircraft : "executed by"
+
+@enduml

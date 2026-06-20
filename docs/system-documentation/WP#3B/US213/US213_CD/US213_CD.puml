@@ -1,0 +1,42 @@
+@startuml
+title US213 - Class Diagram
+hide circle
+skinparam classAttributeIconSize 0
+
+class FlightController {
+  + getFlights(aircraftReg: String, status: String, page: int, size: int): ResponseEntity
+}
+
+class ListScheduledFlightsUseCase {
+  + execute(aircraftReg: String, pageable: Pageable): Page<Flight>
+}
+
+class FlightService {
+  + getScheduledFlightsByAircraft(aircraftReg: String, pageable: Pageable): Page<Flight>
+}
+
+interface AircraftRepository {
+  + existsById(id: String): boolean
+}
+
+interface FlightRepository {
+  + findByAircraftRegistrationAndStatus(aircraftReg: String, status: FlightStatus, pageable: Pageable): Page<Flight>
+}
+
+class Flight <<entity>> <<root>> {
+  - flight_id: String
+  - scheduled_datetime: Date
+}
+
+class FlightStatus <<enum>> {
+  - scheduled: int
+}
+
+FlightController --> ListScheduledFlightsUseCase
+ListScheduledFlightsUseCase --> FlightService
+FlightService --> AircraftRepository
+FlightService --> FlightRepository
+FlightRepository ..> Flight : returns
+Flight *--> FlightStatus
+
+@enduml

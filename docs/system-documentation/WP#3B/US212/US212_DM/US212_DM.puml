@@ -1,0 +1,46 @@
+@startuml
+hide circle
+hide methods
+skinparam classAttributeIconSize 0
+title US212 - Domain Model Excerpt
+
+class Route <<entity>> <<root>>{
+    - route_id: String
+    - active: boolean
+    - estimated_flight_time: int
+    - min_range: float
+    - min_capacity: int
+}
+
+class Aircraft <<entity>> <<root>> {
+    - registration_ID: String
+    - seating_capacity: int
+    - range: float
+}
+
+class AircraftStatus <<enum>> {
+    - active: int
+    - in_flight: int
+    - inactive: int
+    - under_maintenance: int
+}
+
+class Flight <<entity>> <<root>> {
+    - flight_id: String
+    - scheduled_datetime: Date
+}
+
+class FlightStatus <<enum>> {
+    - scheduled: int
+    - flying: int
+    - delayed: int
+    - completed: int
+    - canceled: int
+}
+
+Aircraft *--> AircraftStatus
+Flight *--> FlightStatus
+Flight --> Route : "does"
+Flight --> Aircraft : "executed by"
+
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+autonumber
+title US214 - System Sequence Diagram (SSD)
+
+actor "ATCC" as Actor
+participant "System" as Sys
+
+autoactivate on
+
+Actor -> Sys : GET /routes?active=true&sortBy=popularity&page=0&size=10
+alt Successful Query
+    Sys --> Actor : 200 OK\n{ routes: [...], page: 0, totalPages: X, _links }
+else Invalid Sort Parameter
+    Sys --> Actor : 400 Bad Request\n{ error message }
+end
+
+@enduml

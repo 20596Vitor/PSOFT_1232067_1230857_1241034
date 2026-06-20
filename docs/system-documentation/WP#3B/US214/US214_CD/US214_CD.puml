@@ -1,0 +1,39 @@
+@startuml
+title US214 - Class Diagram
+hide circle
+skinparam classAttributeIconSize 0
+
+class RouteController {
+  + getActiveRoutes(sortBy: String, page: int, size: int): ResponseEntity
+}
+
+class ListActiveRoutesUseCase {
+  + execute(sortBy: String, pageable: Pageable): Page<Route>
+}
+
+class RouteService {
+  + getActiveRoutes(sortBy: String, pageable: Pageable): Page<Route>
+}
+
+interface RouteRepository {
+  + findActiveRoutesOrderByPopularityDesc(pageable: Pageable): Page<Route>
+  + findActiveRoutesOrderByDistance(pageable: Pageable): Page<Route>
+}
+
+class Route <<entity>> <<root>> {
+  - route_id: String
+  - active: boolean
+}
+
+class Airport <<entity>> <<root>> {
+  - iata_code: String
+  - coordinates: String
+}
+
+RouteController --> ListActiveRoutesUseCase
+ListActiveRoutesUseCase --> RouteService
+RouteService --> RouteRepository
+RouteRepository ..> Route : returns
+Route --> Airport : contains origins & destinations
+
+@enduml

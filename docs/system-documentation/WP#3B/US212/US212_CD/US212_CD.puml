@@ -1,0 +1,50 @@
+@startuml
+title US212 - Class Diagram
+hide circle
+skinparam classAttributeIconSize 0
+
+class FlightController {
+  + scheduleFlight(dto: ScheduleFlightDTO): ResponseEntity
+}
+
+class ScheduleFlightUseCase {
+  + execute(routeId: String, aircraftReg: String, dateTime: Date): Flight
+}
+
+class FlightService {
+  + createScheduledFlight(routeId: String, aircraftReg: String, dateTime: Date): Flight
+  - validateConstraints(aircraft: Aircraft, route: Route): void
+}
+
+interface RouteRepository {
+  + findById(id: String): Optional<Route>
+}
+
+interface AircraftRepository {
+  + findById(id: String): Optional<Aircraft>
+}
+
+interface FlightRepository {
+  + save(flight: Flight): Flight
+  + findOverlappingFlights(aircraftReg: String, dateTime: Date): List<Flight>
+}
+
+class Flight <<entity>> <<root>> {
+  - flight_id: String
+  - scheduled_datetime: Date
+  + Flight(route: Route, aircraft: Aircraft, dt: Date, status: FlightStatus)
+}
+
+class FlightStatus <<enum>> {
+  - scheduled: int
+}
+
+FlightController --> ScheduleFlightUseCase
+ScheduleFlightUseCase --> FlightService
+FlightService --> RouteRepository
+FlightService --> AircraftRepository
+FlightService --> FlightRepository
+FlightService ..> Flight : creates
+Flight *--> FlightStatus
+
+@enduml

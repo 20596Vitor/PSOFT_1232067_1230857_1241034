@@ -1,0 +1,17 @@
+@startuml
+autonumber
+title US213 - System Sequence Diagram (SSD)
+
+actor "ATCC" as Actor
+participant "System" as Sys
+
+autoactivate on
+
+Actor -> Sys : GET /flights?aircraftRegistration={registration_ID}&status=scheduled&page=0&size=10
+alt Successful Query
+    Sys --> Actor : 200 OK\n{ flights: [...], page: 0, totalPages: X, _links }
+else Aircraft not found / Invalid Input
+    Sys --> Actor : 404 Not Found / 400 Bad Request
+end
+
+@enduml

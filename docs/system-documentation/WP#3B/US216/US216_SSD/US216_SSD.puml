@@ -1,0 +1,17 @@
+@startuml
+autonumber
+title US216 - System Sequence Diagram (SSD)
+
+actor "ATCC" as Actor
+participant "System" as Sys
+
+autoactivate on
+
+Actor -> Sys : GET /routes/alternatives?origin={iata1}&destination={iata2}
+alt Valid search
+    Sys --> Actor : 200 OK\n{ alternatives: [ [routeA, routeB], [routeC, routeD, routeE] ], _links }
+else Airport(s) not found
+    Sys --> Actor : 404 Not Found\n{ error message }
+end
+
+@enduml
