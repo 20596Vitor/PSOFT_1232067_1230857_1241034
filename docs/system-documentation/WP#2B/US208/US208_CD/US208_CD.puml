@@ -1,0 +1,48 @@
+@startuml
+title US208: Update Airport Operational Data - Class Diagram
+
+package "Airport Aggregate"{
+
+    class Airport <<root>>{
+           - iataCode: String
+           - name: String
+           - city: String
+           - country: String
+           - status: AirportStatus
+           - contactInfo: ContactInfo
+           - operationalHours: OperationalHours
+           - version: Long
+           ---
+           + Airport(iataCode, name, city, country, status, contactInfo, operationalHours)
+           + updateOperationalData(OperationalHours, ContactInfo): void
+    }
+
+    class ContactInfo <<Value Object>> <<Record>> {
+           - email: String
+           - phoneNumber: String
+    }
+
+    class OperationalHours <<Value Object>> <<Record>> {
+           - openTime: LocalTime
+           - closeTime: LocalTime
+    }
+
+    class EnhancedAirportService <<Domain Service>>{
+           ---
+           + updateOperationalHoursAndContacts(String iataCode, OperationalHours, ContactInfo): void
+    }
+
+    interface AirportRepository {
+           ---
+           + Optional<Airport> findByIataCode(String iataCode)
+           + Airport save(Airport)
+    }
+
+    Airport *--> "1" ContactInfo
+    Airport *--> "1" OperationalHours
+
+    EnhancedAirportService ..> Airport : manipulates >
+    EnhancedAirportService ..> AirportRepository : uses >
+}
+
+@enduml

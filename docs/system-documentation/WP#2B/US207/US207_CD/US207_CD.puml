@@ -1,0 +1,72 @@
+@startuml
+title WP#2B: Enhanced Airport Features - Class Diagram
+
+package "Airport Aggregate"{
+
+    class Airport <<root>>{
+           - iataCode: String
+           - name: String
+           - city: String
+           - country: String
+           - status: AirportStatus
+           - contactInfo: ContactInfo
+           - operationalHours: OperationalHours
+           - terminals: List<AirportTerminal>
+           ---
+           + Airport(iataCode, name, city, country, status, contactInfo, operationalHours, terminals)
+           + updateOperationalData(OperationalHours, ContactInfo)
+           + changeStatus(AirportStatus)
+    }
+
+    class AirportTerminal <<Value Object>> <<Record>> {
+           - terminal: String
+           - gates: List<AirportGate>
+    }
+
+    class AirportGate <<Value Object>> <<Record>> {
+           - gate: String
+    }
+
+    class ContactInfo <<Value Object>> <<Record>> {
+           - email: String
+           - phoneNumber: String
+    }
+
+    class OperationalHours <<Value Object>> <<Record>> {
+           - openTime: LocalTime
+           - closeTime: LocalTime
+    }
+
+    enum AirportStatus {
+           OPERATIONAL
+           CLOSED
+           UNDER_MAINTENANCE
+    }
+
+    class EnhancedAirportService <<Domain Service>>{
+           ---
+           + registerAirportWithFacilities(...): Airport
+           + updateOperationalHoursAndContacts(String iataCode, OperationalHours, ContactInfo): void
+           + getBusiestAirports(): List<Airport>
+           + getAirportsGroupedByCountry(String country): List<Airport>
+    }
+
+    interface AirportRepository {
+           ---
+           + boolean existsByIataCode(String iataCode)
+           + Optional<Airport> findByIataCode(String iataCode)
+           + List<Airport> findAllOrderByRoutesCountDesc()
+           + List<Airport> findByCountry(String country)
+    }
+
+    Airport *--> "0..*" AirportTerminal
+    AirportTerminal *--> "0..*" AirportGate
+    Airport *--> "1" ContactInfo
+    Airport *--> "1" OperationalHours
+    Airport --> AirportStatus
+
+    EnhancedAirportService ..> Airport : manipulates >
+    EnhancedAirportService ..> AirportRepository : uses >
+}
+
+@enduml

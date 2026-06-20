@@ -1,0 +1,18 @@
+@startuml
+autonumber
+
+title US208 - Update Airport Operational Data — Simplified Sequence Diagram
+
+actor "Backoffice Operator" as BO
+participant ":System" as Sys
+
+BO -> Sys: Update airport operational hours and contact info
+Sys --> BO: Request airport identifier (iataCode) and new details \n(openTime, closeTime, email, phoneNumber)
+
+BO -> Sys: Inserts requested data
+Sys --> BO: Shows updated data to confirm
+
+BO -> Sys: Confirms data updates
+Sys --> BO: Updates the airport records and displays a success message
+
+@enduml

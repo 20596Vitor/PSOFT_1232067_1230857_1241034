@@ -1,0 +1,47 @@
+@startuml
+title WP#2B: Enhanced Airport Features - Domain Model
+
+package "Airport Aggregate" {
+
+    entity Airport <<Aggregate Root>> <<Entity>> {
+           - iataCode [Identity]
+           - name
+           - city
+           - country
+           - status
+    }
+
+    class AirportTerminal <<Value Object>> {
+           - terminalName
+    }
+
+    class AirportGate <<Value Object>> {
+           - gateNumber
+    }
+
+    class ContactInfo <<Value Object>> {
+           - email
+           - phoneNumber
+    }
+
+    class OperationalHours <<Value Object>> {
+           - openTime
+           - closeTime
+    }
+
+    enum AirportStatus <<Enum>> {
+           OPERATIONAL
+           CLOSED
+           UNDER_MAINTENANCE
+    }
+
+
+    Airport *--> "0..*" AirportTerminal : contains >
+    AirportTerminal *--> "0..*" AirportGate : contains >
+    Airport *--> "1" ContactInfo : has >
+    Airport *--> "1" OperationalHours : operates during >
+    Airport --> AirportStatus : current status >
+}
+
+
+@enduml

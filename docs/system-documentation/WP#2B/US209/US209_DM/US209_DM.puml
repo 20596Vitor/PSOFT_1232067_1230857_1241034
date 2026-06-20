@@ -1,0 +1,24 @@
+@startuml
+title US209: View Airport Routes - Domain Model
+
+package "Airport Aggregate" {
+    entity Airport <<Aggregate Root>> <<Entity>> {
+           - iataCode [Identity]
+           - name
+           - city
+           - country
+    }
+}
+
+package "Route Aggregate" {
+    entity FlightRoute <<Aggregate Root>> <<Entity>> {
+           - routeId [Identity]
+           - estimatedFlightTime
+    }
+}
+
+FlightRoute "0..*" --> "1" Airport : departs from (origin) >
+FlightRoute "0..*" --> "1" Airport : arrives at (destination) >
+
+
+@enduml

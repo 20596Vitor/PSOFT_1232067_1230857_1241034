@@ -1,0 +1,38 @@
+@startuml
+title US209: View Airport Routes - Class Diagram
+
+package "Airport Aggregate" {
+    class Airport <<root>> {
+           - iataCode: String
+           - name: String
+           - city: String
+           - country: String
+    }
+}
+
+package "Route Aggregate" {
+    class FlightRoute <<root>> {
+           - routeId: Long
+           - originAirport: Airport
+           - destinationAirport: Airport
+           - estimatedFlightTime: Duration
+    }
+
+    class EnhancedAirportService <<Domain Service>> {
+           ---
+           + findRoutesByAirport(String iataCode): List<FlightRoute>
+    }
+
+    interface FlightRouteRepository {
+           ---
+           + List<FlightRoute> findByOriginAirportIataCodeOrDestinationAirportIataCode(String iataCode)
+    }
+}
+
+FlightRoute "0..*" --> "1" Airport : origin
+FlightRoute "0..*" --> "1" Airport : estination
+
+EnhancedAirportService ..> FlightRoute : filters >
+EnhancedAirportService ..> FlightRouteRepository : uses >
+
+@enduml

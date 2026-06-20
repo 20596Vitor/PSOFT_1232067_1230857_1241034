@@ -1,0 +1,30 @@
+@startuml
+title US208: Update Airport Operational Data - Domain Model
+
+package "Airport Aggregate" {
+
+    entity Airport <<Aggregate Root>> <<Entity>> {
+           - iataCode [Identity]
+           - name
+           - city
+           - country
+           - status
+    }
+
+    class ContactInfo <<Value Object>> {
+           - email
+           - phoneNumber
+    }
+
+    class OperationalHours <<Value Object>> {
+           - openTime
+           - closeTime
+    }
+
+
+    Airport *--> "1" ContactInfo : has >
+    Airport *--> "1" OperationalHours : operates during >
+}
+
+
+@enduml

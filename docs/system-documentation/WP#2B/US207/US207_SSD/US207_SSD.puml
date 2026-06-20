@@ -1,0 +1,18 @@
+@startuml
+autonumber
+
+title US207 - Register an Airport with Facilities — Simplified Sequence Diagram
+
+actor "Backoffice Operator" as BO
+participant ":System" as Sys
+
+BO -> Sys: Register an airport with facilities
+Sys --> BO: Request details \n(iataCode, name, city, country, status, contactInfo, operationalHours, terminals)
+
+BO -> Sys: Inserts requested data
+Sys --> BO: Shows data inserted to confirm
+
+BO -> Sys: Confirms data inserted
+Sys --> BO: Registers the airport and displays a confirmation message
+
+@enduml

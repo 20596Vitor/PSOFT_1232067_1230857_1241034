@@ -1,0 +1,31 @@
+@startuml
+autonumber
+title US209 - View Airport Routes — Sequence Diagram
+
+autoactivate on
+
+actor "Air Transport Company Collaborator" as ATCC
+participant "AirportController" as Ctrl
+participant "FindAirportRoutesUseCase" as UC
+participant "EnhancedAirportService" as Service
+database "FlightRouteRepository" as RouteRepo
+
+ATCC -> Ctrl : GET /api/airports/{iataCode}/routes
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has "ATCC" authorization
+    Ctrl -> UC : execute(iataCode)
+
+    UC -> Service : findRoutesByAirport(iataCode)
+
+    Service -> RouteRepo : findByOriginIataCodeOrDestinationIataCode(iataCode)
+    return listOfRoutes
+
+    return listOfRoutes
+    return 200 OK\n[ { routeId, origin, destination, estimatedTime, _links }, ... ]
+
+else User does not have authorization
+    Ctrl --> ATCC : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

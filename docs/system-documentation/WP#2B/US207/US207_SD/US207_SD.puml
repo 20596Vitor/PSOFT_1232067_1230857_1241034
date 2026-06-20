@@ -1,0 +1,54 @@
+@startuml
+autonumber
+title US207 - Register an Airport with Facilities — Sequence Diagram
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant "AirportController" as Ctrl
+participant "RegisterAirportUseCase" as UC
+participant "EnhancedAirportService" as Service
+database "AirportRepository" as Repo
+
+BO -> Ctrl : POST /api/airports\n{ iataCode, name, city, country, status, contactInfo, operationalHours, terminals }
+
+Ctrl -> Ctrl : extract username and role from JWT
+alt User has "Backoffice Operator" authorization
+    Ctrl -> UC : execute(iataCode, name, city, country, status, contactInfo, operationalHours, terminals)
+
+    UC -> Service : registerAirportWithFacilities(iataCode, name, city, country, status, contactInfo, operationalHours, terminals)
+
+    Service -> Repo : existsByIataCode(iataCode)
+    return exists
+
+    alt The Airport already exists
+        Service --> UC : throw IllegalArgumentException("Airport already exists")
+        UC --> Ctrl : throw ResponseStatusException(409, "Conflict")
+        Ctrl --> BO : 409 Conflict\n{ message: "Airport already registered" }
+
+    else The Airport does NOT exist
+
+        loop for each terminal in terminals
+            Service -> AirportTerminal ** : new AirportTerminal(terminalName)
+            loop for each gate in terminal.gates
+                Service -> AirportGate ** : new AirportGate(gateNumber)
+            end
+        end
+
+        Service -> ContactInfo ** : new ContactInfo(email, phoneNumber)
+        Service -> OperationalHours ** : new OperationalHours(openTime, closeTime)
+
+        Service -> Airport ** : new Airport(iataCode, name, city, country, status, contactInfo, operationalHours, terminals)
+
+        Service -> Repo : save(airport)
+        return airport(persisted)
+
+        return airport
+        return 201 Created\n{ iataCode, name, city, country, _links }
+    end
+
+else User does not have authorization
+    Ctrl --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

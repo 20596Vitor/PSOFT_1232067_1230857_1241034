@@ -1,0 +1,15 @@
+@startuml
+autonumber
+
+title US209 - View Airport Routes — Simplified Sequence Diagram
+
+actor "Air Transport Company Collaborator" as ATCC
+participant ":System" as Sys
+
+ATCC -> Sys: Request all routes departing from or arriving at a specific airport
+Sys --> ATCC: Request airport identifier (iataCode)
+
+ATCC -> Sys: Inserts airport iataCode
+Sys --> ATCC: Retrieves and displays the list of flight routes linked to that airport
+
+@enduml
