@@ -92,5 +92,6 @@ public class Airport {
     public void setAirportType(String airportType) { this.type = airportType; }
 
     public void changeStatus(AirportStatus status) {
+        this.updateStatus(status);
     }
 }

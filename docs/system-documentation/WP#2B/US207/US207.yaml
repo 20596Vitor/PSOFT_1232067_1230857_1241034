@@ -1,63 +1,140 @@
 openapi: 3.0.3
 info:
-  title: AlSafe API - US101 Registar Modelo de Aeronave
+  title: AISafe API - US207 Register Airport with Facilities
   version: 1.0.0
-  description: Documento para o requisito funcional de registar modelos de aeronaves.
+  description: Register an airport with optional terminal, gate, service, contact info and operational hours.
 servers:
   - url: http://localhost:8080
-    description: Servidor de Desenvolvimento Local
 
 paths:
-  /api/aircraft-models:
+  /api/airports:
     post:
-      summary: Registar um novo modelo de aeronave
-      operationId: registerAircraftModel
+      summary: Register a new airport with optional facilities (US207)
+      operationId: registerAirportWithFacilities
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AircraftModel'
+              $ref: '#/components/schemas/AirportRequest'
+            example:
+              iataCode: "OPO"
+              name: "Aeroporto Francisco Sá Carneiro"
+              city: "Porto"
+              country: "Portugal"
+              type: "comercial"
+              gate: "A1"
+              terminal: "Terminal 1"
+              service: "WiFi"
+              email: "opo@ana.pt"
+              phoneNumber: "+351229432400"
+              openTime: "05:00"
+              closeTime: "23:59"
       responses:
         '201':
-          description: Modelo de aeronave criado com sucesso.
+          description: Airport registered successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AircraftModel'
+                $ref: '#/components/schemas/AirportResponse'
         '400':
-          description: Erro de validação nos dados (ex. valores negativos).
+          description: Validation error or IATA code already exists.
+        '403':
+          description: Not authorized.
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
-    AircraftModel:
+    AirportRequest:
       type: object
-      required:
-        - manufacturer
-        - modelName
-        - cruisingSpeed
-        - fuelCapacity
-        - maxRange
+      required: [iataCode, name, city, country]
+      properties:
+        iataCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          pattern: '^[A-Z]{3}$'
+          example: "OPO"
+        name:
+          type: string
+          example: "Aeroporto Francisco Sá Carneiro"
+        city:
+          type: string
+          example: "Porto"
+        country:
+          type: string
+          example: "Portugal"
+        type:
+          type: string
+          example: "comercial"
+        gate:
+          type: string
+          description: Optional gate identifier.
+          example: "A1"
+        terminal:
+          type: string
+          description: Optional terminal name.
+          example: "Terminal 1"
+        service:
+          type: string
+          description: Optional service available at airport.
+          example: "WiFi"
+
+    AirportResponse:
+      type: object
       properties:
         id:
           type: integer
           example: 1
-          description: ID gerado automaticamente.
-        manufacturer:
+        iataCode:
           type: string
-          example: "Boeing"
-        modelName:
+          example: "OPO"
+        name:
           type: string
-          example: "737 MAX 8"
-        cruisingSpeed:
-          type: number
-          format: float
-          example: 839.0
-        fuelCapacity:
-          type: number
-          format: float
-          example: 25941.0
-        maxRange:
-          type: number
-          format: float
-          example: 6570.0
+          example: "Aeroporto Francisco Sá Carneiro"
+        city:
+          type: string
+          example: "Porto"
+        country:
+          type: string
+          example: "Portugal"
+        status:
+          type: string
+          example: "OPERATIONAL"
+        gate:
+          type: object
+          properties:
+            gate:
+              type: string
+              example: "A1"
+        terminal:
+          type: object
+          properties:
+            terminal:
+              type: string
+              example: "Terminal 1"
+        contactInfo:
+          type: object
+          properties:
+            email:
+              type: string
+            phoneNumber:
+              type: string
+        operationalHours:
+          type: object
+          properties:
+            openTime:
+              type: string
+            closeTime:
+              type: string
+        certifiedAirplaneModels:
+          type: array
+          items:
+            type: string

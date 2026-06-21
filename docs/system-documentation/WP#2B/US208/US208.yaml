@@ -1,0 +1,105 @@
+openapi: 3.0.3
+info:
+  title: AISafe API - US208 Update Airport Operational Details
+  version: 1.0.0
+  description: Update airport contact information and operational hours.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/airports/{iataCode}/details:
+    patch:
+      summary: Update airport operational hours and contact info (US208)
+      operationId: updateAirportDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: iataCode
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            example: "LIS"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDetailsRequest'
+            example:
+              email: "lis@ana.pt"
+              phoneNumber: "+351210041000"
+              openTime: "05:00"
+              closeTime: "23:59"
+      responses:
+        '200':
+          description: Airport details updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirportResponse'
+        '400':
+          description: Invalid data (e.g. openTime after closeTime).
+        '404':
+          description: Airport not found.
+        '403':
+          description: Not authorized.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UpdateDetailsRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "lis@ana.pt"
+        phoneNumber:
+          type: string
+          example: "+351210041000"
+        openTime:
+          type: string
+          description: Format HH:mm
+          example: "05:00"
+        closeTime:
+          type: string
+          description: Format HH:mm
+          example: "23:59"
+
+    AirportResponse:
+      type: object
+      properties:
+        iataCode:
+          type: string
+          example: "LIS"
+        name:
+          type: string
+          example: "Aeroporto Humberto Delgado"
+        status:
+          type: string
+          example: "OPERATIONAL"
+        contactInfo:
+          type: object
+          properties:
+            email:
+              type: string
+              example: "lis@ana.pt"
+            phoneNumber:
+              type: string
+              example: "+351210041000"
+        operationalHours:
+          type: object
+          properties:
+            openTime:
+              type: string
+              example: "05:00"
+            closeTime:
+              type: string
+              example: "23:59"
