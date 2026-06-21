@@ -43,17 +43,14 @@ public class ScheduleFlightUseCase {
             throw new IllegalStateException("A aeronave selecionada não está operacional (Estado: " + aircraft.getStatus() + ").");
         }
 
-        // Validação de negócio 1: Range
         if (aircraft.getAircraftModel().getMaxRange() < route.getMinRange()) {
             throw new IllegalArgumentException("O alcance da aeronave é insuficiente para esta rota.");
         }
 
-        // Validação de negócio 2: Capacidade
         if (aircraft.getSeatingCapacity() < route.getMinCapacity()) {
             throw new IllegalArgumentException("A capacidade da aeronave é inferior ao exigido pela rota.");
         }
 
-        // Validação de negócio 3: Disponibilidade (assumimos uma janela de tempo genérica de 12 horas para bloqueio do avião)
         LocalDateTime windowStart = scheduledDatetime.minusHours(6);
         LocalDateTime windowEnd = scheduledDatetime.plusHours(6);
 

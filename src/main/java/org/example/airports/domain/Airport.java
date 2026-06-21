@@ -19,6 +19,9 @@ public class Airport {
     private String country;
     private String type;
 
+    @Column(name = "coordinates")
+    private String coordinates;
+
     @Enumerated(EnumType.STRING)
     private AirportStatus status;
 
@@ -46,12 +49,13 @@ public class Airport {
     public Airport() {}
 
     public Airport(String iataCode, String name, String city, String country,
-                   String type, AirportStatus status, AirportGate gate, AirportTerminal terminal) {
+                   String type, String coordinates, AirportStatus status, AirportGate gate, AirportTerminal terminal) {
         this.iataCode = iataCode;
         this.name = name;
         this.city = city;
         this.country = country;
         this.type = type;
+        this.coordinates = coordinates;
         this.status = status;
         this.gate = gate;
         this.terminal = terminal;
@@ -83,6 +87,7 @@ public class Airport {
     public String getCountry() { return country; }
     public String getType() { return type; }
     public String getAirportType() { return type; }
+    public String getCoordinates() { return coordinates; }
     public AirportStatus getStatus() { return status; }
     public AirportGate getGate() { return gate; }
     public AirportTerminal getTerminal() { return terminal; }
@@ -91,7 +96,9 @@ public class Airport {
     public OperationalHours getOperationalHours() { return operationalHours; }
     public List<String> getCertifiedAirplaneModels() { return certifiedAirplaneModels; }
 
+    // Setters
     public void setAirportType(String airportType) { this.type = airportType; }
+    public void setCoordinates(String coordinates) { this.coordinates = coordinates; }
 
     public void changeStatus(AirportStatus status) {
         this.updateStatus(status);

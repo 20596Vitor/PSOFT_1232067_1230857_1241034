@@ -15,4 +15,10 @@ public interface RouteRepository extends JpaRepository<Route, String> {
     List<Route> findByOriginIataCodeAndDestinationIataCode(String originIataCode, String destinationIataCode);
     @Query("SELECT r FROM Route r WHERE r.minRange <= :maxRange AND r.minCapacity <= :capacity AND r.active = true")
     List<Route> findCompatibleRoutes(@Param("maxRange") Float maxRange, @Param("capacity") Integer capacity);
+    List<Route> findByActiveTrue();
+    @Query("SELECT r FROM Route r LEFT JOIN Flight f ON f.route = r " +
+            "WHERE r.active = true " +
+            "GROUP BY r " +
+            "ORDER BY COUNT(f) DESC")
+    org.springframework.data.domain.Page<Route> findActiveRoutesOrderByPopularity(org.springframework.data.domain.Pageable pageable);
 }

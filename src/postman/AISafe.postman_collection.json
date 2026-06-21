@@ -1017,6 +1017,218 @@
           ]
         }
       }
+    },
+    {
+      "name": "US212 - Agendar um Voo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"routeId\": \"{{routeId}}\",\n  \"aircraftRegistration\": \"CS-TKA\",\n  \"scheduledDatetime\": \"2026-08-15T10:00:00\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/flights",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": [
+            "api",
+            "flights"
+          ]
+        }
+      }
+    },
+    {
+      "name": "US213 - Ver Voos Agendados de um Avião",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Retorna paginação com o voo\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Array.isArray(jsonData.content)).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/flights/aircraft/CS-TKA/scheduled?page=0&size=5",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": [
+            "api",
+            "flights",
+            "aircraft",
+            "CS-TKA",
+            "scheduled"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "US214 - Listar Rotas Ativas (Por Distância)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/routes/active?sortBy=distance&page=0&size=10",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": [
+            "api",
+            "routes",
+            "active"
+          ],
+          "query": [
+            {
+              "key": "sortBy",
+              "value": "distance"
+            },
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "US215 - Calcular Distância Total da Rede",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Contém totalDistanceKm\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"totalDistanceKm\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/routes/total-distance",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": [
+            "api",
+            "routes",
+            "total-distance"
+          ]
+        }
+      }
+    },
+    {
+      "name": "US216 - Pesquisar Rotas Alternativas (Com Escalas)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK ou 204 No Content\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/routes/search?origin=LIS&destination=MAD",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": [
+            "api",
+            "routes",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "origin",
+              "value": "LIS"
+            },
+            {
+              "key": "destination",
+              "value": "MAD"
+            }
+          ]
+        }
+      }
     }
   ]
 }

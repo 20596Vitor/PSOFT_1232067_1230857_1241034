@@ -10,13 +10,19 @@ import org.example.airports.repositories.AirportTypeRepository;
 import org.example.user.User;
 import org.example.user.UserRepository;
 
-// --- Imports do WP1 (Aeronaves) ---
 import org.example.aircraft.domain.Aircraft;
 import org.example.aircraft.domain.AircraftModel;
 import org.example.aircraft.domain.AircraftStatus;
 import org.example.aircraft.repositories.AircraftRepository;
 import org.example.aircraft.repositories.AircraftModelRepository;
 import java.time.LocalDate;
+
+
+import org.example.flights.domain.Route;
+import org.example.flights.domain.Flight;
+import org.example.flights.repositories.RouteRepository;
+import org.example.flights.repositories.FlightRepository;
+import java.time.LocalDateTime;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -34,16 +40,23 @@ public class DataInitializer implements CommandLineRunner {
     private final AircraftModelRepository aircraftModelRepository;
     private final AircraftRepository aircraftRepository;
 
+    private final RouteRepository routeRepository;
+    private final FlightRepository flightRepository;
+
     public DataInitializer(AirportRepository airportRepository,
                            AirportTypeRepository airportTypeRepository,
                            UserRepository userRepository,
                            AircraftModelRepository aircraftModelRepository,
-                           AircraftRepository aircraftRepository) {
+                           AircraftRepository aircraftRepository,
+                           RouteRepository routeRepository,
+                           FlightRepository flightRepository) {
         this.airportRepository = airportRepository;
         this.airportTypeRepository = airportTypeRepository;
         this.userRepository = userRepository;
         this.aircraftModelRepository = aircraftModelRepository;
         this.aircraftRepository = aircraftRepository;
+        this.routeRepository = routeRepository;
+        this.flightRepository = flightRepository;
     }
 
     @Override
@@ -86,13 +99,22 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (airportRepository.count() == 0) {
-            Airport lisboa = new Airport("LIS", "Aeroporto Humberto Delgado", "Lisboa", "Portugal", "military", AirportStatus.OPERATIONAL, null, null);
-            Airport porto = new Airport("OPO", "Aeroporto Francisco Sá Carneiro", "Porto", "Portugal", "comercial", AirportStatus.OPERATIONAL, null,null);
+            Airport lisboa = new Airport("LIS", "Aeroporto Humberto Delgado", "Lisboa", "Portugal", "military", "38.7742,-9.1342", AirportStatus.OPERATIONAL, null, null);
+            Airport porto = new Airport("OPO", "Aeroporto Francisco Sá Carneiro", "Porto", "Portugal", "comercial", "41.2481,-8.6814", AirportStatus.OPERATIONAL, null,null);
+
+            Airport faro = new Airport("FAO", "Aeroporto Gago Coutinho", "Faro", "Portugal", "comercial", "37.0144,-7.9659", AirportStatus.OPERATIONAL, null, null);
+            Airport madrid = new Airport("MAD", "Aeroporto Adolfo Suárez", "Madrid", "Espanha", "comercial", "40.4719,-3.5626", AirportStatus.OPERATIONAL, null, null);
 
             airportRepository.save(lisboa);
             airportRepository.save(porto);
+            airportRepository.save(faro);
+            airportRepository.save(madrid);
             System.out.println("-> Aeroportos de teste inicializados!");
         }
+
+
+        Aircraft aviao1 = null;
+        Aircraft aviao3 = null;
 
         if (aircraftModelRepository.count() == 0) {
             System.out.println("-> A carregar Modelos de Aeronaves (WP1)...");
@@ -116,37 +138,60 @@ public class DataInitializer implements CommandLineRunner {
             if (aircraftRepository.count() == 0) {
                 System.out.println("-> A carregar Aeronaves da Frota (WP1)...");
 
-                Aircraft aviao1 = new Aircraft();
+                aviao1 = new Aircraft();
                 aviao1.setRegistrationNumber("CS-TKA");
-                aviao1.setManufacturingDate(LocalDate.of(2020, 5, 10)); // Retirado o .toString()
+                aviao1.setManufacturingDate(LocalDate.of(2020, 5, 10));
                 aviao1.setSeatingCapacity(189);
                 aviao1.setStatus(AircraftStatus.IN_FLIGHT);
                 aviao1.setTotalOperationalHours(1450.5);
                 aviao1.setAircraftModel(boeing737);
-                aircraftRepository.save(aviao1);
+                aviao1 = aircraftRepository.save(aviao1);
 
                 Aircraft aviao2 = new Aircraft();
                 aviao2.setRegistrationNumber("CS-XPTO");
-                aviao2.setManufacturingDate(LocalDate.of(2018, 11, 22)); // Retirado o .toString()
+                aviao2.setManufacturingDate(LocalDate.of(2018, 11, 22));
                 aviao2.setSeatingCapacity(180);
                 aviao2.setStatus(AircraftStatus.UNDER_MAINTENANCE);
                 aviao2.setTotalOperationalHours(3200.0);
                 aviao2.setAircraftModel(airbusA320);
                 aircraftRepository.save(aviao2);
 
-                Aircraft aviao3 = new Aircraft();
+                aviao3 = new Aircraft();
                 aviao3.setRegistrationNumber("CS-BOM");
-                aviao3.setManufacturingDate(LocalDate.of(2023, 1, 15)); // Retirado o .toString()
+                aviao3.setManufacturingDate(LocalDate.of(2023, 1, 15));
                 aviao3.setSeatingCapacity(189);
                 aviao3.setStatus(AircraftStatus.ACTIVE);
                 aviao3.setTotalOperationalHours(125.0);
                 aviao3.setAircraftModel(boeing737);
-                aircraftRepository.save(aviao3);
+                aviao3 = aircraftRepository.save(aviao3);
 
                 System.out.println("-> Frota inicializada com sucesso!");
             }
+        } else {
+            aviao1 = aircraftRepository.findByRegistrationNumber("CS-TKA").orElse(null);
+            aviao3 = aircraftRepository.findByRegistrationNumber("CS-BOM").orElse(null);
+        }
+
+        if (routeRepository.count() == 0) {
+            System.out.println("-> A carregar Rotas e Voos (WP3)...");
+
+            Route r1 = routeRepository.save(new Route("LIS", "OPO", 50, 300.0f, 100));
+            Route r2 = routeRepository.save(new Route("OPO", "MAD", 80, 550.0f, 150));
+            Route r3 = routeRepository.save(new Route("LIS", "FAO", 45, 250.0f, 50));
+            Route r4 = routeRepository.save(new Route("FAO", "MAD", 90, 600.0f, 120));
+
+            if (flightRepository.count() == 0 && aviao1 != null && aviao3 != null) {
+
+                flightRepository.save(new Flight(r1, aviao3, LocalDateTime.now().plusDays(1)));
+
+                flightRepository.save(new Flight(r2, aviao3, LocalDateTime.now().plusDays(3)));
+
+                flightRepository.save(new Flight(r3, aviao1, LocalDateTime.now().plusDays(1)));
+            }
+
+            System.out.println("-> Rotas e Voos agendados com sucesso!");
+        }
 
         System.out.println("--- BOOTSTRAP CONCLUÍDO ---");
     }
-}
 }

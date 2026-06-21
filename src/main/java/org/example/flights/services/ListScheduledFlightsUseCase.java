@@ -23,7 +23,6 @@ public class ListScheduledFlightsUseCase {
 
     public Page<Flight> execute(String aircraftRegistration, Pageable pageable) {
 
-        // Valida se a aeronave existe
         if (!aircraftRepository.existsByRegistrationNumber(aircraftRegistration)) {
             throw new IllegalArgumentException("Aeronave não encontrada com a matrícula: " + aircraftRegistration);
         }
