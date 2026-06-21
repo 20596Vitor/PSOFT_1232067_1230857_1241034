@@ -34,7 +34,6 @@ public class ScheduleFlightController {
 
             EntityModel<Flight> resource = EntityModel.of(flight);
 
-            // Adicionamos o HATEOAS. (Assumindo que mais tarde terás um controlador GetFlightDetailsController)
             resource.add(linkTo(methodOn(ScheduleFlightController.class).scheduleFlight(request)).withSelfRel());
 
             return ResponseEntity.status(201).body(resource);
