@@ -1,5 +1,5 @@
 @startuml
-title Register an aircraft model - Class Diagram
+title Register aircraft model with diagram - Class Diagram
 
 package "Aircraft Aggregate"{
 
@@ -10,13 +10,14 @@ package "Aircraft Aggregate"{
            - fuel_capacity: float
            - max_range: float
            - cruising_speed: float
+           - technical_diagram: String
            ---
-           +AircraftModel(manufacturer, modelName, maxSeatingCapacity, fuelCapacity, maxRange, cruisingSpeed)
+           +AircraftModel(manufacturer, modelName, maxSeatingCapacity, fuelCapacity, maxRange, cruisingSpeed, technicalDiagram)
     }
 
     class RegisterAircraftModelService <<Domain Service>>{
            ---
-           +registerAircraftModel(String manufacturer, String modelName, int maxSeatingCapacity, float fuelCapacity, float maxRange, float cruisingSpeed): AircraftModel
+           +registerAircraftModel(String manufacturer, String modelName, int maxSeatingCapacity, float fuelCapacity, float maxRange, float cruisingSpeed, String technicalDiagram): AircraftModel
     }
 
    interface AircraftModelRepository{

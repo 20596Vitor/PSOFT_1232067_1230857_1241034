@@ -1,0 +1,87 @@
+@startuml
+autonumber
+title US202 - Register Aircraft Model with Diagram — Sequence Diagram
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant "AircraftModelController" as Ctrl
+participant "RegisterAircraftModelUseCase" as UC
+participant "RegisterAircraftModelService" as Service
+database "AircraftModelRepository" as Repo
+
+BO -> Ctrl : POST /aircraft-models\n{ manufacturer, modelName, maxSeatingCapacity, ..., technicalDiagram }
+
+Ctrl -> Ctrl : extract username & roles from JWT
+alt User has authorization (Role: Backoffice Operator)
+    Ctrl -> UC : execute(manufacturer, modelName, maxSeatingCapacity, fuelCapacity, maxRange, cruisingSpeed, technicalDiagram)
+
+    UC -> Service : registerAircraftModel(manufacturer, modelName, maxSeatingCapacity, fuelCapacity, maxRange, cruisingSpeed, technicalDiagram)
+
+    Service -> Repo : existsByModelName(modelName)
+    return exists
+
+    alt The Aircraft Model already exists
+        Service --> UC : throw IllegalArgumentException("Aircraft model already exists")
+        UC --> Ctrl : throw ResponseStatusException(409, "Conflict")
+        Ctrl --> BO : 409 Conflict\n{ message: "Aircraft model already registered" }
+
+    else The Aircraft Model does NOT exist
+
+        Service -> AircraftModel ** : new AircraftModel(manufacturer, modelName, maxSeatingCapacity, fuelCapacity, maxRange, cruisingSpeed, technicalDiagram)
+
+        Service -> Repo : save(aircraftModel)
+        return aircraftModel(persisted)
+
+        return aircraftModel
+        return 201 Created\n{ modelName, manufacturer, technicalDiagram, _links }
+    end
+
+else User does not have authorization
+    Ctrl --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml@startuml
+       autonumber
+       title US202 - Register Aircraft Model with Diagram — Sequence Diagram
+
+       autoactivate on
+
+       actor "Backoffice Operator" as BO
+       participant "AircraftModelController" as Ctrl
+       participant "RegisterAircraftModelUseCase" as UC
+       participant "RegisterAircraftModelService" as Service
+       database "AircraftModelRepository" as Repo
+
+       BO -> Ctrl : POST /aircraft-models\n{ manufacturer, modelName, maxSeatingCapacity, ..., technicalDiagram }
+
+       Ctrl -> Ctrl : extract username & roles from JWT
+       alt User has authorization (Role: Backoffice Operator)
+           Ctrl -> UC : execute(manufacturer, modelName, maxSeatingCapacity, fuelCapacity, maxRange, cruisingSpeed, technicalDiagram)
+
+           UC -> Service : registerAircraftModel(manufacturer, modelName, maxSeatingCapacity, fuelCapacity, maxRange, cruisingSpeed, technicalDiagram)
+
+           Service -> Repo : existsByModelName(modelName)
+           return exists
+
+           alt The Aircraft Model already exists
+               Service --> UC : throw IllegalArgumentException("Aircraft model already exists")
+               UC --> Ctrl : throw ResponseStatusException(409, "Conflict")
+               Ctrl --> BO : 409 Conflict\n{ message: "Aircraft model already registered" }
+
+           else The Aircraft Model does NOT exist
+
+               Service -> AircraftModel ** : new AircraftModel(manufacturer, modelName, maxSeatingCapacity, fuelCapacity, maxRange, cruisingSpeed, technicalDiagram)
+
+               Service -> Repo : save(aircraftModel)
+               return aircraftModel(persisted)
+
+               return aircraftModel
+               return 201 Created\n{ modelName, manufacturer, technicalDiagram, _links }
+           end
+
+       else User does not have authorization
+           Ctrl --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+       end
+
+       @enduml

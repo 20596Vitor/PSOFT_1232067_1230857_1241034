@@ -1,8 +1,7 @@
 @startuml
-title US101 - Register an Aircraft Model - Domain Model
+title US201 - Update Aircraft Model Specifications - Domain Model
 
 package "Aircraft Aggregate" {
-
     class AircraftModel <<root>> <<entity>> {
         - manufacturer: String
         - model_name: String
@@ -20,13 +19,13 @@ package "Aircraft Aggregate" {
         - range: float
     }
 
-    class MaxSeatingCapacity <<value object>> {
-        - max_capacity: int
+    class SeatingCapacity <<value object>> {
+        - capacity: int
     }
 
     AircraftModel o--> "1" CruisingSpeed
     AircraftModel o--> "1" FuelCapacity
     AircraftModel o--> "1" MaxRange
-    AircraftModel o--> "1" MaxSeatingCapacity
+    AircraftModel o--> "1" SeatingCapacity
 }
-@endif
+@enduml

@@ -1,0 +1,47 @@
+@startuml
+autonumber
+title US201 - Update Aircraft Model Specifications — Sequence Diagram
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant "AircraftModelController" as Ctrl
+participant "UpdateModelSpecsUseCase" as UC
+participant "UpdateModelSpecsService" as Service
+database "AircraftModelRepository" as Repo
+
+BO -> Ctrl : PATCH /aircraft-models/{modelName}\n{ seatingCapacity, fuelCapacity, maxRange, cruisingSpeed }
+
+Ctrl -> Ctrl : extract username & roles from JWT
+alt User has authorization (Role: Backoffice Operator)
+    Ctrl -> UC : execute(modelName, seatingCapacity, fuelCapacity, maxRange, cruisingSpeed)
+
+    UC -> Service : updateSpecifications(modelName, seatingCapacity, fuelCapacity, maxRange, cruisingSpeed)
+
+    Service -> Repo : findByModelName(modelName)
+    return optAircraftModel
+
+    alt Aircraft Model is NOT found
+        Service --> UC : throw EntityNotFoundException("Model not found")
+        UC --> Ctrl : throw ResponseStatusException(404, "Not Found")
+        Ctrl --> BO : 404 Not Found\n{ message: "Aircraft model does not exist" }
+
+    else Aircraft Model is found
+
+        Service -> AircraftModel : updateSpecifications(seatingCapacity, fuelCapacity, maxRange, cruisingSpeed)
+        return
+
+        Service -> Repo : save(aircraftModel)
+        return aircraftModel(persisted)
+
+        Service --> UC : return aircraftModel
+        UC --> Ctrl : return aircraftModel
+
+        Ctrl --> BO : 200 OK\n{ modelName, seatingCapacity, fuelCapacity, _links }
+    end
+
+else User does not have authorization
+    Ctrl --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

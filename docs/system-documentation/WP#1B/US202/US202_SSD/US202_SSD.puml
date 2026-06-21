@@ -1,12 +1,12 @@
 @startuml
 autonumber
 
-title US101 - Register an Aircraft Model — Simplified Sequence Diagram
+title US202 - Register Aircraft Model with Diagram — Simplified Sequence Diagram
 actor "Backoffice Operator" as BO
 participant ":System" as Sys
 
-BO -> Sys: Register an aircraft model
-Sys --> BO: Request details \n(manufacturer, model name, max seating capacity, fuel capacity, max range, cruising speed)
+BO -> Sys: Register an aircraft model with an optional technical diagram
+Sys --> BO: Request details \n(manufacturer, model name, max capacity, ..., optional technical diagram)
 
 BO -> Sys: Inserts requested data
 Sys --> BO: Shows data inserted to confirm

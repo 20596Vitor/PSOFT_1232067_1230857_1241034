@@ -1,0 +1,21 @@
+@startuml
+autonumber
+
+title US201 - Update Aircraft Model Specifications — Simplified Sequence Diagram
+actor "Backoffice Operator" as BO
+participant ":System" as Sys
+
+BO -> Sys: Requests to update an aircraft model's specifications \n(provides model name and new specs to update)
+Sys --> BO: Updates the specifications and displays a confirmation message
+
+@enduml@startuml
+       autonumber
+
+       title US201 - Update Aircraft Model Specifications — Simplified Sequence Diagram
+       actor "Backoffice Operator" as BO
+       participant ":System" as Sys
+
+       BO -> Sys: Requests to update an aircraft model's specifications \n(provides model name and new specs to update)
+       Sys --> BO: Updates the specifications and displays a confirmation message
+
+       @enduml

@@ -1,0 +1,32 @@
+@startuml
+title Update aircraft model specifications - Class Diagram
+
+package "Aircraft Aggregate"{
+
+    class AircraftModel <<root>>{
+           - manufacturer: String
+           - model_name: String
+           - seating_capacity: int
+           - fuel_capacity: float
+           - max_range: float
+           - cruising_speed: float
+           ---
+           +updateSpecifications(seatingCapacity, fuelCapacity, maxRange, cruisingSpeed)
+    }
+
+    class UpdateAircraftModelService <<Domain Service>>{
+           ---
+           +updateSpecifications(String modelName, int seatingCapacity, float fuelCapacity, float maxRange, float cruisingSpeed): AircraftModel
+    }
+
+   interface AircraftModelRepository{
+           ---
+           + Optional<AircraftModel> findByModelName(String modelName)
+           + AircraftModel save(AircraftModel)
+   }
+
+    UpdateAircraftModelService ..> AircraftModel : updates >
+    UpdateAircraftModelService ..> AircraftModelRepository : uses >
+}
+
+@enduml
