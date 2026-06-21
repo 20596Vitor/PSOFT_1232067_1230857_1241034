@@ -2,23 +2,29 @@ package org.example.airports.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 @Embeddable
-public record AirportTerminal(
-        @JsonProperty("terminal") @NotBlank String terminal,
-        @ElementCollection(fetch = FetchType.EAGER)
-        @CollectionTable(name = "airport_gates", joinColumns = @JoinColumn(name = "airport_id"))
-        @JsonProperty("gates") List<AirportGate> gates
-) {
-    public AirportTerminal {
-        if (terminal == null || terminal.isBlank()) {
-            throw new IllegalArgumentException("Terminal cannot be null or blank");
-        }
-        if (gates == null) {
-            gates = new ArrayList<>();
-        }
+public class AirportTerminal {
+
+    @JsonProperty("terminal")
+    private String terminal;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "airport_gates", joinColumns = @JoinColumn(name = "airport_id"))
+    @JsonProperty("gates")
+    private List<AirportGate> gates = new ArrayList<>();
+
+    public AirportTerminal() {}
+
+    public AirportTerminal(String terminal, List<AirportGate> gates) {
+        this.terminal = terminal;
+        this.gates = gates != null ? gates : new ArrayList<>();
     }
+
+    public String getTerminal() { return terminal; }
+    public void setTerminal(String terminal) { this.terminal = terminal; }
+    public List<AirportGate> getGates() { return gates; }
+    public void setGates(List<AirportGate> gates) { this.gates = gates; }
 }

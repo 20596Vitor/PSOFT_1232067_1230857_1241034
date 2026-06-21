@@ -4,9 +4,12 @@ import org.example.airports.domain.Airport;
 import org.example.airports.domain.AirportStatus;
 import org.example.airports.repositories.AirportRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 @Service
+@Transactional
 public class RegisterAirportUseCase {
 
     private final AirportRepository airportRepository;
@@ -18,7 +21,6 @@ public class RegisterAirportUseCase {
     public Airport execute(Airport newAirport) {
 
         String iataFormatado = newAirport.getIataCode().toUpperCase().trim();
-
 
         Optional<Airport> existing = airportRepository.findByIataCode(iataFormatado);
         if (existing.isPresent()) {

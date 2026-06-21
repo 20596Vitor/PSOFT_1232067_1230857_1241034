@@ -4,9 +4,12 @@ import org.example.airports.domain.Airport;
 import org.example.airports.domain.AirportStatus;
 import org.example.airports.repositories.AirportRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.NoSuchElementException;
 
 @Service
+@Transactional
 public class UpdateAirportStatusUseCase {
 
     private final AirportRepository airportRepository;

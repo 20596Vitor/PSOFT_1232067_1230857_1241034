@@ -6,10 +6,12 @@ import org.example.airports.domain.ContactInfo;
 import org.example.airports.domain.OperationalHours;
 import org.example.airports.repositories.AirportRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UpdateAirportDetailsUseCase {
 
     private final AirportRepository airportRepository;

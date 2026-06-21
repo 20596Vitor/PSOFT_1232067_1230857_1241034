@@ -4,13 +4,14 @@ import org.example.airports.domain.Airport;
 import org.example.airports.domain.AirportStatus;
 import org.example.airports.repositories.AirportRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class AirportService {
 
     private final AirportRepository airportRepository;
-
 
     public AirportService(AirportRepository airportRepository) {
         this.airportRepository = airportRepository;
@@ -26,9 +27,7 @@ public class AirportService {
         Airport airport = airportRepository.findByIataCode(iataCode)
                 .orElseThrow(() -> new RuntimeException("Aeroporto não encontrado."));
 
-
         airport.updateStatus(newStatus);
-
 
         return airportRepository.save(airport);
     }

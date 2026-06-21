@@ -848,6 +848,175 @@
           ]
         }
       }
+    },
+    {
+      "name": "US207 - Registar um aeroporto com instalações detalhadas",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"iataCode\": \"FAO\",\n    \"name\": \"Aeroporto de Faro\",\n    \"city\": \"Faro\",\n    \"country\": \"Portugal\",\n    \"type\": \"International\",\n    \"timezone\": \"Europe/Lisbon\",\n    \"coordinates\": \"37.0144,-7.9659\",\n    \"runwayInformation\": \"2490m\",\n    \"terminal\": {\n        \"terminal\": \"T1\",\n        \"gates\": [\n            { \"gate\": \"1\" },\n            { \"gate\": \"2\" },\n            { \"gate\": \"3\" }\n        ]\n    },\n    \"gate\": { \"gate\": \"1\" },\n    \"service\": { \"service\": \"Lounge VIP\" }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/airports",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "airports"]
+        }
+      }
+    },
+    {
+      "name": "US208 - Atualizar detalhes do aeroporto (Horários e Contactos)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"admin@aeroportofaro.pt\",\n    \"phoneNumber\": \"+351289800800\",\n    \"openTime\": \"04:00\",\n    \"closeTime\": \"23:59\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/airports/FAO/details",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "airports", "FAO", "details"]
+        }
+      }
+    },
+    {
+      "name": "US209 - Ver todas as rotas de/para um aeroporto específico",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/airports/FAO/routes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "airports", "FAO", "routes"]
+        }
+      }
+    },
+    {
+      "name": "US210 - Estatísticas dos aeroportos mais movimentados",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/airports/stats/busiest",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "airports", "stats", "busiest"]
+        }
+      }
+    },
+    {
+      "name": "US211 - Ver aeroportos agrupados por país",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code é 200 OK\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/airports/grouped?country=Portugal",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "airports", "grouped"],
+          "query": [
+            {
+              "key": "country",
+              "value": "Portugal"
+            }
+          ]
+        }
+      }
     }
   ]
 }
