@@ -1,0 +1,65 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US215
+  version: 1.0.0
+  description: Documentação para calcular a distância total coberta por todas as rotas ativas na rede, baseada no diagrama de sequência aprovado.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /routes/total-distance:
+    get:
+      summary: Calcular distância total da rede (US215)
+      description: Calcula e retorna a distância total coberta por todas as rotas ativas existentes na rede, iterando sobre as coordenadas de origem e destino.
+      operationId: calculateTotalNetworkDistance
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Distância total calculada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotalDistanceResponse'
+        '403':
+          description: Forbidden - O utilizador não tem autorização (não tem a role ATCC).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Not authorized"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    TotalDistanceResponse:
+      type: object
+      properties:
+        total_distance:
+          type: number
+          format: float
+          example: 45230.75
+          description: O valor total da distância somada de todas as rotas.
+        unit:
+          type: string
+          example: "km"
+          description: A unidade de medida da distância calculada.
+        _links:
+          type: object
+          description: Links HATEOAS da representação do recurso.
+          example:
+            self:
+              href: "/routes/total-distance"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem detalhada sobre o erro.

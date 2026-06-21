@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US209
+  version: 1.0.0
+  description: Documentação para listar todas as rotas que partem ou chegam a um aeroporto específico, baseada no diagrama de sequência aprovado.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/airports/{iataCode}/routes:
+    get:
+      summary: Ver rotas de/para um aeroporto (US209)
+      description: Retorna uma lista de todas as rotas de voo que têm o aeroporto especificado como origem ou destino. Requer autorização de ATCC.
+      operationId: findRoutesByAirport
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: iataCode
+          in: path
+          required: true
+          description: O código IATA do aeroporto a consultar (ex. LIS, OPO).
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            example: "OPO"
+      responses:
+        '200':
+          description: Lista de rotas associadas ao aeroporto retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RouteSummaryDTO'
+        '403':
+          description: Forbidden - O utilizador não tem autorização (não tem a role ATCC).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Not authorized to perform this action"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RouteSummaryDTO:
+      type: object
+      properties:
+        routeId:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        origin:
+          type: string
+          example: "OPO"
+        destination:
+          type: string
+          example: "MAD"
+        estimatedTime:
+          type: integer
+          example: 65
+          description: "Tempo estimado de voo em minutos."
+        _links:
+          type: object
+          description: Links HATEOAS da representação do recurso.
+          example:
+            self:
+              href: "/api/routes/3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem detalhada sobre o erro ocorrido.

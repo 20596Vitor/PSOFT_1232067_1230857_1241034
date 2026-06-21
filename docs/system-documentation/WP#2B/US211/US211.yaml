@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US211
+  version: 1.0.0
+  description: Documentação para listar aeroportos agrupados por país, baseada no diagrama de sequência aprovado.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/airports/search/grouped:
+    get:
+      summary: Ver aeroportos agrupados por país (US211)
+      description: Retorna uma lista de aeroportos filtrada pelo país especificado. Requer autorização de ATCC.
+      operationId: getAirportsByCountry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: country
+          in: query
+          required: true
+          description: O país para o qual se pretende listar os aeroportos (ex. Portugal).
+          schema:
+            type: string
+            example: "Portugal"
+      responses:
+        '200':
+          description: Lista de aeroportos do país especificado retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AirportGroupDTO'
+        '403':
+          description: Forbidden - O utilizador não tem autorização (não tem a role ATCC).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Not authorized to perform this action"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    AirportGroupDTO:
+      type: object
+      properties:
+        iataCode:
+          type: string
+          example: "OPO"
+          description: "Código IATA do aeroporto."
+        name:
+          type: string
+          example: "Aeroporto Francisco Sá Carneiro"
+        city:
+          type: string
+          example: "Porto"
+        country:
+          type: string
+          example: "Portugal"
+        _links:
+          type: object
+          description: Links HATEOAS da representação do recurso.
+          example:
+            self:
+              href: "/api/airports/OPO"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem detalhada sobre o erro ocorrido.

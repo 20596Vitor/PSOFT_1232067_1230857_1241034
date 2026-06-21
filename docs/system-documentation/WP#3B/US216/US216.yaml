@@ -1,0 +1,116 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US216
+  version: 1.0.0
+  description: Documentação para pesquisar rotas alternativas (com escalas) entre dois aeroportos, baseada no diagrama de sequência aprovado.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /routes/alternatives:
+    get:
+      summary: Procurar rotas alternativas (US216)
+      description: Permite pesquisar caminhos indiretos ou rotas alternativas entre dois aeroportos específicos através de um algoritmo de travessia de grafos sobre as rotas ativas.
+      operationId: searchAlternativeRoutes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: origin
+          in: query
+          required: true
+          description: Código IATA do aeroporto de origem (ex. LIS).
+          schema:
+            type: string
+            example: "LIS"
+        - name: destination
+          in: query
+          required: true
+          description: Código IATA do aeroporto de destino (ex. MAD).
+          schema:
+            type: string
+            example: "MAD"
+      responses:
+        '200':
+          description: Lista de percursos alternativos encontrados com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlternativeRoutesResponse'
+        '403':
+          description: Forbidden - O utilizador não tem autorização (não tem a role ATCC).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Not authorized"
+        '404':
+          description: Not Found - Um ou ambos os aeroportos indicados não existem na base de dados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Origin or Destination Airport does not exist"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RouteDTO:
+      type: object
+      properties:
+        routeId:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        originIataCode:
+          type: string
+          example: "LIS"
+        destinationIataCode:
+          type: string
+          example: "OPO"
+        estimatedFlightTime:
+          type: integer
+          example: 50
+        minRange:
+          type: number
+          format: float
+          example: 300.0
+
+    RoutePathDTO:
+      type: object
+      description: Representa um caminho alternativo completo composto por uma ou várias rotas (escalas).
+      properties:
+        pathId:
+          type: string
+          example: "path-1"
+        routes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteDTO'
+
+    AlternativeRoutesResponse:
+      type: object
+      properties:
+        alternatives:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoutePathDTO'
+        _links:
+          type: object
+          description: Links HATEOAS da representação do recurso.
+          example:
+            self:
+              href: "/routes/alternatives?origin=LIS&destination=MAD"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem detalhada sobre o erro.

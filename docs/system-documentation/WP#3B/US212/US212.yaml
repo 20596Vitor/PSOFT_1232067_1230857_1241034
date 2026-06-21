@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US212
+  version: 1.0.0
+  description: Documentação para agendar um voo (Schedule Flight) com base no diagrama de sequência aprovado.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /flights:
+    post:
+      summary: Agendar um voo (US212)
+      description: Atribui uma aeronave a uma rota para uma data e hora específicas. Valida as restrições da aeronave (autonomia, capacidade, estado) e garante que não existem voos sobrepostos para a mesma aeronave.
+      operationId: scheduleFlight
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleFlightRequest'
+      responses:
+        '201':
+          description: Voo agendado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleFlightResponse'
+        '400':
+          description: Bad Request - Falha na validação das restrições (aeronave não cumpre os requisitos da rota).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Constraints validation failed"
+        '403':
+          description: Forbidden - O utilizador não tem autorização (não tem a role ATCC).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Not authorized"
+        '404':
+          description: Not Found - A rota (route_id) ou a aeronave (registration_ID) não existem na base de dados.
+        '409':
+          description: Conflict - A aeronave já se encontra reservada/sobreposta noutro voo nessa data/hora.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Aircraft unavailable at given datetime"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ScheduleFlightRequest:
+      type: object
+      required:
+        - route_id
+        - registration_ID
+        - scheduled_datetime
+      properties:
+        route_id:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          description: ID da rota a ser utilizada.
+        registration_ID:
+          type: string
+          example: "CS-TKA"
+          description: Matrícula da aeronave a atribuir.
+        scheduled_datetime:
+          type: string
+          format: date-time
+          example: "2026-07-15T14:30:00Z"
+          description: Data e hora do voo.
+
+    ScheduleFlightResponse:
+      type: object
+      properties:
+        flight_id:
+          type: string
+          format: uuid
+          example: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          description: ID do voo gerado.
+        _links:
+          type: object
+          description: Links HATEOAS da representação do recurso.
+          example:
+            self:
+              href: "/flights/f47ac10b-58cc-4372-a567-0e02b2c3d479"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem detalhada sobre o erro.

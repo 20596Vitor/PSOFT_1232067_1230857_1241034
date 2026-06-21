@@ -1,0 +1,69 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US210
+  version: 1.0.0
+  description: Documentação para gerar estatísticas sobre os aeroportos mais movimentados (com mais rotas), baseada no diagrama de sequência aprovado.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /api/airports/statistics/busiest:
+    get:
+      summary: Estatísticas dos aeroportos mais movimentados (US210)
+      description: Retorna uma lista estatística dos aeroportos ordenada pelo número de rotas (partidas e chegadas). Requer autorização de Backoffice Operator.
+      operationId: getBusiestAirportsReport
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Relatório estatístico gerado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BusiestAirportDTO'
+        '403':
+          description: Forbidden - O utilizador não tem autorização (não tem a role Backoffice Operator).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Not authorized to perform this action"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    BusiestAirportDTO:
+      type: object
+      properties:
+        iataCode:
+          type: string
+          example: "LIS"
+          description: "Código IATA do aeroporto."
+        airportName:
+          type: string
+          example: "Aeroporto Humberto Delgado"
+        routesCount:
+          type: integer
+          example: 125
+          description: "Número total de rotas associadas ao aeroporto."
+        _links:
+          type: object
+          description: Links HATEOAS da representação do recurso.
+          example:
+            self:
+              href: "/api/airports/LIS"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensagem detalhada sobre o erro ocorrido.

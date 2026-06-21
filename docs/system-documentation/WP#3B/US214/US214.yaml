@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US214
+  version: 1.0.0
+  description: Documentação para listar rotas ativas ordenadas por popularidade ou distância (com paginação), baseada no diagrama de sequência aprovado.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /routes:
+    get:
+      summary: Listar rotas ativas ordenadas (US214)
+      description: Retorna todas as rotas ativas da rede ordenadas pela sua popularidade (número de voos) ou pela distância. Suporta paginação.
+      operationId: getActiveRoutes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: active
+          in: query
+          required: false
+          description: Filtro para retornar apenas rotas ativas.
+          schema:
+            type: boolean
+            example: true
+        - name: sortBy
+          in: query
+          required: true
+          description: Critério de ordenação (popularity ou distance).
+          schema:
+            type: string
+            enum: [popularity, distance]
+            example: "popularity"
+        - name: page
+          in: query
+          required: false
+          description: Número da página (Zero-based).
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          required: false
+          description: Número de registos por página.
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de rotas ativas ordenadas com sucesso (Paginada).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedRouteResponse'
+        '400':
+          description: Bad Request - Parâmetro de ordenação inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Invalid sort criteria"
+        '403':
+          description: Forbidden - O utilizador não tem autorização (não tem a role ATCC).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Not authorized"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RouteDTO:
+      type: object
+      properties:
+        routeId:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        originIataCode:
+          type: string
+          example: "LIS"
+        destinationIataCode:
+          type: string
+          example: "OPO"
+        estimatedFlightTime:
+          type: integer
+          example: 50
+        minRange:
+          type: number
+          format: float
+          example: 300.0
+        active:
+          type: boolean
+          example: true
+        distance:
+          type: number
+          format: float
+          example: 277.5
+          description: Distância calculada caso a ordenação seja por distância.
+        popularity:
+          type: integer
+          example: 42
+          description: Número de utilizações caso a ordenação seja por popularidade.
+
+    PagedRouteResponse:
+      type: object
+      properties:
+        routes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteDTO'
+        pageable:
+          type: object
+          properties:
+            pageNumber:
+              type: integer
+              example: 0
+            pageSize:
+              type: integer
+              example: 10
+            totalElements:
+              type: integer
+              example: 120
+            totalPages:
+              type: integer
+              example: 12
+        _links:
+          type: object
+          description: Links HATEOAS de navegação.
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string

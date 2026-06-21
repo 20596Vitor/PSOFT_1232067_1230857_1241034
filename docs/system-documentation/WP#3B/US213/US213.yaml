@@ -1,0 +1,125 @@
+openapi: 3.0.3
+info:
+  title: AlSafe API - US213
+  version: 1.0.0
+  description: Documentação para ver todos os voos agendados de uma aeronave (com paginação), baseada no diagrama de sequência aprovado.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /flights:
+    get:
+      summary: Ver voos agendados de uma aeronave (US213)
+      description: Consulta e retorna todos os voos programados para uma determinada aeronave. Suporta paginação conforme os requisitos não-funcionais.
+      operationId: getAircraftScheduledFlights
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: aircraftRegistration
+          in: query
+          required: true
+          description: Matrícula da aeronave para pesquisa (ex. CS-TKA).
+          schema:
+            type: string
+            example: "CS-TKA"
+        - name: status
+          in: query
+          required: false
+          description: Estado do voo a pesquisar.
+          schema:
+            type: string
+            example: "scheduled"
+        - name: page
+          in: query
+          required: false
+          description: Número da página (Zero-based).
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          required: false
+          description: Número de registos por página.
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Lista de voos agendados encontrados (Paginada).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedFlightResponse'
+        '403':
+          description: Forbidden - O utilizador não tem autorização (não tem a role ATCC).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Not authorized"
+        '404':
+          description: Not Found - A aeronave pesquisada não existe na base de dados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Aircraft not registered"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ScheduledFlightDTO:
+      type: object
+      properties:
+        flightId:
+          type: string
+          format: uuid
+        routeId:
+          type: string
+          format: uuid
+        aircraftRegistration:
+          type: string
+        scheduledDateTime:
+          type: string
+          format: date-time
+        status:
+          type: string
+
+    PagedFlightResponse:
+      type: object
+      properties:
+        flights:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduledFlightDTO'
+        pageable:
+          type: object
+          properties:
+            pageNumber:
+              type: integer
+              example: 0
+            pageSize:
+              type: integer
+              example: 10
+            totalElements:
+              type: integer
+              example: 45
+            totalPages:
+              type: integer
+              example: 5
+        _links:
+          type: object
+          description: Links HATEOAS de navegação.
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
