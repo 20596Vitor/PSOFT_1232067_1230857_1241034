@@ -38,7 +38,7 @@ public class AircraftModel {
         this.image = image;
     }
 
-    protected AircraftModel() {}
+    public AircraftModel() {}
 
     public AircraftModel(String manufacturer, String modelName, Float cruisingSpeed, Float fuelCapacity, Float maxRange) {
         this.manufacturer = manufacturer;

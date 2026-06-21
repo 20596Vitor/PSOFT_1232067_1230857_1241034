@@ -28,7 +28,7 @@ public class Aircraft {
     @JoinColumn(name = "aircraft_model_id", nullable = false)
     private AircraftModel aircraftModel;
 
-    protected Aircraft() {}
+    public Aircraft() {}
 
     public Aircraft(String registrationNumber, LocalDate manufacturingDate, Integer seatingCapacity, AircraftStatus status, AircraftModel aircraftModel) {
         this.registrationNumber = registrationNumber;
@@ -85,12 +85,14 @@ public class Aircraft {
     public void setAircraftModel(AircraftModel aircraftModel) {
         this.aircraftModel = aircraftModel;
     }
+
     private Double totalOperationalHours = 0.0;
+
     public Double getTotalOperationalHours() {
         return totalOperationalHours;
     }
+
     public void setTotalOperationalHours(Double totalOperationalHours) {
         this.totalOperationalHours = totalOperationalHours;
     }
 }
-
