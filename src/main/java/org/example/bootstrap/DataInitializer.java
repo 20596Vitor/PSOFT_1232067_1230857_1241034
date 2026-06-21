@@ -100,23 +100,22 @@ public class DataInitializer implements CommandLineRunner {
             AircraftModel boeing737 = new AircraftModel();
             boeing737.setManufacturer("Boeing");
             boeing737.setModelName("737 MAX 8");
-            boeing737.setCruisingSpeed(839.0f); // Adicionado o 'f'
-            boeing737.setFuelCapacity(25941.0f); // Adicionado o 'f'
-            boeing737.setMaxRange(6570.0f); // Adicionado o 'f'
+            boeing737.setCruisingSpeed(839.0f);
+            boeing737.setFuelCapacity(25941.0f);
+            boeing737.setMaxRange(6570.0f);
             boeing737 = aircraftModelRepository.save(boeing737);
 
             AircraftModel airbusA320 = new AircraftModel();
             airbusA320.setManufacturer("Airbus");
             airbusA320.setModelName("A320neo");
-            airbusA320.setCruisingSpeed(828.0f); // Adicionado o 'f'
-            airbusA320.setFuelCapacity(24210.0f); // Adicionado o 'f'
-            airbusA320.setMaxRange(6100.0f); // Adicionado o 'f'
+            airbusA320.setCruisingSpeed(828.0f);
+            airbusA320.setFuelCapacity(24210.0f);
+            airbusA320.setMaxRange(6100.0f);
             airbusA320 = aircraftModelRepository.save(airbusA320);
 
             if (aircraftRepository.count() == 0) {
                 System.out.println("-> A carregar Aeronaves da Frota (WP1)...");
 
-                // Avião 1 - Em Voo e com bastantes horas
                 Aircraft aviao1 = new Aircraft();
                 aviao1.setRegistrationNumber("CS-TKA");
                 aviao1.setManufacturingDate(LocalDate.of(2020, 5, 10)); // Retirado o .toString()
@@ -126,7 +125,6 @@ public class DataInitializer implements CommandLineRunner {
                 aviao1.setAircraftModel(boeing737);
                 aircraftRepository.save(aviao1);
 
-                // Avião 2 - Em Manutenção
                 Aircraft aviao2 = new Aircraft();
                 aviao2.setRegistrationNumber("CS-XPTO");
                 aviao2.setManufacturingDate(LocalDate.of(2018, 11, 22)); // Retirado o .toString()
@@ -136,7 +134,6 @@ public class DataInitializer implements CommandLineRunner {
                 aviao2.setAircraftModel(airbusA320);
                 aircraftRepository.save(aviao2);
 
-                // Avião 3 - Ativo/Disponível na placa
                 Aircraft aviao3 = new Aircraft();
                 aviao3.setRegistrationNumber("CS-BOM");
                 aviao3.setManufacturingDate(LocalDate.of(2023, 1, 15)); // Retirado o .toString()
