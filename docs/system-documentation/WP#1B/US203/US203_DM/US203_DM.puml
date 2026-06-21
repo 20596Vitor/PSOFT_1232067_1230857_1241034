@@ -1,0 +1,20 @@
+@startuml
+title US203 - View Compatible Routes - Domain Model
+
+package "Aircraft Aggregate" {
+    class Aircraft <<root>> <<entity>> {
+        - registration_ID: String
+        - seating_capacity: int
+        - range: float
+    }
+}
+
+package "Route Aggregate" {
+    class Route <<root>> <<entity>> {
+        - route_id: String
+        - min_range: float
+        - min_capacity: int
+    }
+}
+
+@enduml

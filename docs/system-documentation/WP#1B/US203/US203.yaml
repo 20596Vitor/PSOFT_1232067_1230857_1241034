@@ -1,0 +1,28 @@
+openapi: 3.0.3
+info:
+  title: US203 - Rotas Compatíveis
+  version: 1.0
+paths:
+  /api/aircrafts/{registrationNumber}/compatible-routes:
+    get:
+      tags:
+        - Aircrafts
+      summary: "Ver rotas compatíveis com uma aeronave (US203)"
+      description: Retorna uma lista de rotas ativas cujo alcance e capacidade exigidos são suportados pela aeronave específica.
+      parameters:
+        - name: registrationNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de rotas compatíveis retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '404':
+          description: Aeronave não encontrada

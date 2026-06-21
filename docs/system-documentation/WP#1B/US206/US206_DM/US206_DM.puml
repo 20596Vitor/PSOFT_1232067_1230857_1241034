@@ -1,0 +1,20 @@
+@startuml
+title US206 - Calculate Total Operational Hours - Domain Model
+
+package "Aircraft Aggregate" {
+
+    class Aircraft <<root>> <<entity>> {
+    }
+
+    class RegistrationID <<value object>> {
+        - registration_number: String
+    }
+
+    class OperationHours <<value object>> {
+        - hours: float
+    }
+
+    Aircraft o--> "1" RegistrationID
+    Aircraft o--> "1" OperationHours
+}
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+title US204 - Top 5 Utilized Aircraft Models — Simplified Sequence Diagram
+actor "Backoffice Operator" as BO
+participant ":System" as Sys
+
+BO -> Sys: Requests to view the Top 5 most utilized aircraft models \n(provides the sorting criteria: flight hours or assignments)
+Sys --> BO: Displays the Top 5 list with the corresponding utilization data
+
+@enduml

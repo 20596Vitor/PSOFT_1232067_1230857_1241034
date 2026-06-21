@@ -1,0 +1,26 @@
+openapi: 3.0.3
+info:
+  title: US205 - Disponibilidade da Frota
+  version: 1.0
+paths:
+  /api/aircrafts/availability-report:
+    get:
+      tags:
+        - Aircrafts
+      summary: "Obter relatório de disponibilidade da frota em tempo real (US205)"
+      description: Retorna um resumo agregado da quantidade de aeronaves em cada estado (ACTIVE, IN_FLIGHT, UNDER_MAINTENANCE, INACTIVE).
+      responses:
+        '200':
+          description: Relatório gerado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int64
+                example:
+                  ACTIVE: 2
+                  UNDER_MAINTENANCE: 1
+                  IN_FLIGHT: 1
+                  INACTIVE: 0

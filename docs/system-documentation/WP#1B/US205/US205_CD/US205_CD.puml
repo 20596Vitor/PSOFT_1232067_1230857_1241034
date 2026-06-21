@@ -1,0 +1,33 @@
+@startuml
+title View real-time aircraft availability - Class Diagram
+
+package "Aircraft Aggregate"{
+
+    class Aircraft <<root>>{
+           - registration_ID: String
+           - status: AircraftStatus
+           ---
+           +getStatus(): AircraftStatus
+    }
+
+    class AircraftAvailabilityDTO <<DTO>> {
+           - registration_ID: String
+           - model_name: String
+           - status: String
+    }
+
+    class ViewAvailabilityService <<Domain Service>>{
+           ---
+           +getFleetAvailability(): List<AircraftAvailabilityDTO>
+    }
+
+   interface AircraftRepository{
+           ---
+           + List<AircraftAvailabilityDTO> findFleetAvailability()
+   }
+
+    ViewAvailabilityService ..> AircraftAvailabilityDTO : returns >
+    ViewAvailabilityService ..> AircraftRepository : uses >
+}
+
+@enduml

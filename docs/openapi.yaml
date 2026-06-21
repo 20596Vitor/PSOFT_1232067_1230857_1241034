@@ -49,6 +49,7 @@ paths:
                     example: "ADMIN"
         '401':
           description: Credenciais inválidas ou utilizador não encontrado.
+
   /api/airports:
     post:
       summary: Registar um novo aeroporto (US106)
@@ -124,19 +125,68 @@ paths:
 
   /api/aircraft-models:
     post:
-      summary: Registar um novo modelo de aeronave (US101)
+      summary: Registar modelo de aeronave com imagem opcional (US101 + US202)
       operationId: registerAircraftModel
+      description: Regista um novo modelo, suportando o upload de um ficheiro de imagem ou diagrama técnico via multipart/form-data.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                model:
+                  type: object
+                  description: Objeto JSON com os dados do modelo (manufacturer, modelName, etc.)
+                image:
+                  type: string
+                  format: binary
+                  description: Ficheiro de imagem opcional (JPG, PNG)
+      responses:
+        '201':
+          description: Modelo registado com sucesso
+        '400':
+          description: Erro na validação dos dados
+
+  /api/aircraft-models/{id}:
+    patch:
+      summary: Atualizar especificações de um modelo de aeronave (US201)
+      operationId: updateAircraftModelSpecs
+      description: Atualiza campos específicos (alcance, velocidade, etc.) de um modelo existente.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AircraftModel'
+              type: object
+              properties:
+                manufacturer:
+                  type: string
+                modelName:
+                  type: string
+                cruisingSpeed:
+                  type: number
+                  format: float
+                fuelCapacity:
+                  type: number
+                  format: float
+                maxRange:
+                  type: number
+                  format: float
       responses:
-        '201':
-          description: Modelo de aeronave criado com sucesso.
+        '200':
+          description: Modelo atualizado com sucesso
         '400':
-          description: Erro de validação nos dados (ex. valores negativos).
+          description: Dados inválidos (ex. valores negativos)
+        '404':
+          description: Modelo não encontrado
 
   /api/aircrafts:
     post:
@@ -194,6 +244,46 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Aircraft'
+
+  /api/aircrafts/availability-report:
+    get:
+      summary: Obter relatório de disponibilidade da frota (US205)
+      operationId: getFleetAvailabilityStatus
+      description: Retorna um resumo agregado da quantidade de aeronaves em cada estado em tempo real.
+      responses:
+        '200':
+          description: Relatório gerado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int64
+                example:
+                  ACTIVE: 2
+                  UNDER_MAINTENANCE: 1
+                  IN_FLIGHT: 1
+                  INACTIVE: 0
+
+  /api/aircrafts/operational-hours:
+    get:
+      summary: Calcular total de horas operacionais da frota (US206)
+      operationId: getFleetOperationalHours
+      description: Retorna um mapa com a matrícula de cada aeronave e o seu respetivo total de horas de voo.
+      responses:
+        '200':
+          description: Horas operacionais retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: number
+                  format: double
+                example:
+                  "CS-TKA": 125.5
+                  "CS-XPTO": 40.0
 
   /api/aircrafts/{registrationNumber}:
     get:
@@ -253,6 +343,54 @@ paths:
                 $ref: '#/components/schemas/Aircraft'
         '404':
           description: Aeronave não encontrada.
+
+  /api/aircrafts/{registrationNumber}/compatible-routes:
+    get:
+      summary: Ver rotas compatíveis com uma aeronave (US203)
+      operationId: getCompatibleRoutes
+      description: Retorna uma lista de rotas ativas cujo alcance e capacidade exigidos são suportados.
+      parameters:
+        - name: registrationNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de rotas compatíveis retornada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '404':
+          description: Aeronave não encontrada
+
+  /api/aircrafts/{registrationNumber}/add-hours:
+    patch:
+      summary: "[TESTE] Adicionar horas operacionais"
+      operationId: addOperationalHours
+      description: Endpoint auxiliar para injetar horas de voo numa aeronave para demonstração da US206.
+      parameters:
+        - name: registrationNumber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: hours
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: Horas adicionadas com sucesso
+        '400':
+          description: Valor de horas inválido
+        '404':
+          description: Aeronave não encontrada
 
 components:
   schemas:
@@ -329,6 +467,10 @@ components:
           type: number
           format: float
           example: 6570.0
+        image:
+          type: string
+          format: byte
+          description: Imagem opcional do modelo convertida em Base64
 
     Aircraft:
       type: object
@@ -349,6 +491,10 @@ components:
         status:
           type: string
           example: "ACTIVE"
+        totalOperationalHours:
+          type: number
+          format: double
+          example: 125.5
         aircraftModel:
           $ref: '#/components/schemas/AircraftModel'
 

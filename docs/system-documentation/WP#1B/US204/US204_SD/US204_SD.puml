@@ -1,0 +1,33 @@
+@startuml
+autonumber
+title US204 - Top 5 Utilized Aircraft Models — Sequence Diagram
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant "AircraftModelController" as Ctrl
+participant "TopUtilizedModelsUseCase" as UC
+participant "TopUtilizedModelsService" as Service
+database "AircraftModelRepository" as Repo
+
+BO -> Ctrl : GET /aircraft-models/top5?criteria={criteria}
+
+Ctrl -> Ctrl : extract username & roles from JWT
+alt User has authorization (Role: Backoffice Operator)
+    Ctrl -> UC : execute(criteria)
+
+    UC -> Service : getTop5Models(criteria)
+
+    Service -> Repo : findTop5UtilizedModels(criteria)
+    return topModelsList
+
+    Service --> UC : return topModelsList
+    UC --> Ctrl : return topModelsList
+
+    Ctrl --> BO : 200 OK\n[ { modelName, manufacturer, metricValue... }, ... ]
+
+else User does not have authorization
+    Ctrl --> BO : 403 Forbidden\n{ message: "Not authorized to perform this action" }
+end
+
+@enduml

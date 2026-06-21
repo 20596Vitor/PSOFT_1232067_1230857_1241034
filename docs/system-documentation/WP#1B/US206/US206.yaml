@@ -1,0 +1,50 @@
+openapi: 3.0.3
+info:
+  title: US206 - Horas Operacionais
+  version: 1.0
+paths:
+  /api/aircrafts/operational-hours:
+    get:
+      tags:
+        - Aircrafts
+      summary: "Calcular total de horas operacionais da frota (US206)"
+      description: Retorna um mapa com a matrícula de cada aeronave e o seu respetivo total de horas de voo.
+      responses:
+        '200':
+          description: Horas operacionais retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: number
+                  format: double
+                example:
+                  "CS-TKA": 125.5
+                  "CS-XPTO": 40.0
+
+  /api/aircrafts/{registrationNumber}/add-hours:
+    patch:
+      tags:
+        - Aircrafts
+      summary: "[TESTE] Adicionar horas operacionais a uma aeronave"
+      description: Endpoint auxiliar para injetar horas de voo numa aeronave para demonstração da US206.
+      parameters:
+        - name: registrationNumber
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: hours
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: Horas adicionadas com sucesso
+        '400':
+          description: Valor de horas inválido
+        '404':
+          description: Aeronave não encontrada

@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+title US206 - Calculate Total Operational Hours — Simplified Sequence Diagram
+actor "Air Transport Company Collaborator (ATCC)" as ATCC
+participant ":System" as Sys
+
+ATCC -> Sys: Requests to calculate total operational hours for each aircraft
+Sys --> ATCC: Displays a list with the total operational hours per aircraft
+
+@enduml

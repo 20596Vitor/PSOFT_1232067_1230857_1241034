@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+title US205 - View Real-Time Aircraft Availability — Simplified Sequence Diagram
+actor "Air Transport Company Collaborator (ATCC)" as ATCC
+participant ":System" as Sys
+
+ATCC -> Sys: Requests to view real-time aircraft availability status
+Sys --> ATCC: Displays the real-time status of the aircraft fleet (e.g., active, in-flight, under maintenance)
+
+@enduml

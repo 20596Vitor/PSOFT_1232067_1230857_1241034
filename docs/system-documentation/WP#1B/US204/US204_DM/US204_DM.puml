@@ -1,0 +1,25 @@
+@startuml
+title US204 - Top 5 Utilized Aircraft Models - Domain Model
+
+package "Aircraft Aggregate" {
+    class AircraftModel <<root>> <<entity>> {
+        - manufacturer: String
+        - model_name: String
+    }
+
+    class Aircraft <<root>> <<entity>> {
+        - registration_ID: String
+        - flight_hours: float
+    }
+}
+
+package "Flight Aggregate" {
+    class Flight <<root>> <<entity>> {
+        - flight_id: String
+    }
+}
+
+Aircraft --> "1" AircraftModel : "has an"
+Flight --> "1" Aircraft : "executed by"
+
+@enduml

@@ -1,63 +1,45 @@
 openapi: 3.0.3
 info:
-  title: AlSafe API - US101 Registar Modelo de Aeronave
-  version: 1.0.0
-  description: Documento para o requisito funcional de registar modelos de aeronaves.
-servers:
-  - url: http://localhost:8080
-    description: Servidor de Desenvolvimento Local
-
+  title: US201 - Especificações de Aeronave
+  version: 1.0
 paths:
-  /api/aircraft-models:
-    post:
-      summary: Registar um novo modelo de aeronave
-      operationId: registerAircraftModel
+  /api/aircraft-models/{id}:
+    patch:
+      tags:
+        - Aircraft Models
+      summary: "Atualizar especificações de um modelo de aeronave (US201)"
+      description: Atualiza campos específicos (alcance, velocidade, etc.) de um modelo existente.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AircraftModel'
+              type: object
+              properties:
+                manufacturer:
+                  type: string
+                modelName:
+                  type: string
+                cruisingSpeed:
+                  type: number
+                  format: float
+                fuelCapacity:
+                  type: number
+                  format: float
+                maxRange:
+                  type: number
+                  format: float
       responses:
-        '201':
-          description: Modelo de aeronave criado com sucesso.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AircraftModel'
+        '200':
+          description: Modelo atualizado com sucesso
         '400':
-          description: Erro de validação nos dados (ex. valores negativos).
-
-components:
-  schemas:
-    AircraftModel:
-      type: object
-      required:
-        - manufacturer
-        - modelName
-        - cruisingSpeed
-        - fuelCapacity
-        - maxRange
-      properties:
-        id:
-          type: integer
-          example: 1
-          description: ID gerado automaticamente.
-        manufacturer:
-          type: string
-          example: "Boeing"
-        modelName:
-          type: string
-          example: "737 MAX 8"
-        cruisingSpeed:
-          type: number
-          format: float
-          example: 839.0
-        fuelCapacity:
-          type: number
-          format: float
-          example: 25941.0
-        maxRange:
-          type: number
-          format: float
-          example: 6570.0
+          description: Dados inválidos (ex. valores negativos)
+        '404':
+          description: Modelo não encontrado

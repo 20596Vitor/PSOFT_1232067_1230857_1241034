@@ -1,0 +1,23 @@
+@startuml
+title US205 - View Real-Time Aircraft Availability - Domain Model
+
+package "Aircraft Aggregate" {
+
+    class Aircraft <<root>> <<entity>> {
+    }
+
+    class RegistrationID <<value object>> {
+        - registration_number: String
+    }
+
+    enum AircraftStatus <<enum>> {
+        ACTIVE
+        IN_FLIGHT
+        INACTIVE
+        UNDER_MAINTENANCE
+    }
+
+    Aircraft o--> "1" RegistrationID
+    Aircraft o--> "1" AircraftStatus
+}
+@enduml

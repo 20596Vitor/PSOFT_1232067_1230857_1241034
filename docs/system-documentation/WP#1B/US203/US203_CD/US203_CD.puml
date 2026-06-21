@@ -1,0 +1,43 @@
+@startuml
+title View compatible routes - Class Diagram
+
+package "Aircraft Aggregate"{
+    class Aircraft <<root>>{
+           - registration_ID: String
+           - seating_capacity: int
+           - range: float
+           ---
+           +getRange(): float
+           +getSeatingCapacity(): int
+    }
+
+   interface AircraftRepository{
+           ---
+           + Optional<Aircraft> findById(String registrationNumber)
+   }
+}
+
+package "Route Aggregate"{
+    class Route <<root>>{
+           - route_id: String
+           - min_range: float
+           - min_capacity: int
+    }
+
+   interface RouteRepository{
+           ---
+           + List<Route> findCompatibleRoutes(float aircraftRange, int aircraftCapacity)
+   }
+}
+
+class ViewCompatibleRoutesService <<Domain Service>>{
+       ---
+       +getCompatibleRoutes(String registrationNumber): List<Route>
+}
+
+ViewCompatibleRoutesService ..> Aircraft : uses >
+ViewCompatibleRoutesService ..> Route : returns >
+ViewCompatibleRoutesService ..> AircraftRepository : uses >
+ViewCompatibleRoutesService ..> RouteRepository : uses >
+
+@enduml

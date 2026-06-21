@@ -1,0 +1,32 @@
+@startuml
+title Calculate total operational hours - Class Diagram
+
+package "Aircraft Aggregate"{
+
+    class Aircraft <<root>>{
+           - registration_ID: String
+           - operation_hours: float
+           ---
+           +getOperationHours(): float
+    }
+
+    class AircraftOperationalHoursDTO <<DTO>> {
+           - registration_ID: String
+           - operation_hours: float
+    }
+
+    class CalculateOperationalHoursService <<Domain Service>>{
+           ---
+           +calculateFleetOperationalHours(): List<AircraftOperationalHoursDTO>
+    }
+
+   interface AircraftRepository{
+           ---
+           + List<AircraftOperationalHoursDTO> findFleetOperationalHours()
+   }
+
+    CalculateOperationalHoursService ..> AircraftOperationalHoursDTO : returns >
+    CalculateOperationalHoursService ..> AircraftRepository : uses >
+}
+
+@enduml

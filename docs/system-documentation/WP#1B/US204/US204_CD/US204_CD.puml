@@ -1,0 +1,32 @@
+@startuml
+title Top 5 utilized aircraft models - Class Diagram
+
+package "Aircraft Aggregate"{
+
+    class AircraftModel <<root>>{
+           - model_name: String
+           - manufacturer: String
+    }
+
+    class TopAircraftModelDTO <<DTO>> {
+           - model_name: String
+           - manufacturer: String
+           - total_flight_hours: float
+           - total_assignments: int
+    }
+
+    class TopUtilizedModelsService <<Domain Service>>{
+           ---
+           +getTop5Models(String criteria): List<TopAircraftModelDTO>
+    }
+
+   interface AircraftModelRepository{
+           ---
+           + List<TopAircraftModelDTO> findTop5UtilizedModels(String criteria)
+   }
+
+    TopUtilizedModelsService ..> TopAircraftModelDTO : returns >
+    TopUtilizedModelsService ..> AircraftModelRepository : uses >
+}
+
+@enduml

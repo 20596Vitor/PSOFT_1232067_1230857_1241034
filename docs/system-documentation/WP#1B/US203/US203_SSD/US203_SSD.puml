@@ -1,0 +1,11 @@
+@startuml
+autonumber
+
+title US203 - View Compatible Routes — Simplified Sequence Diagram
+actor "Air Transport Company Collaborator (ATCC)" as ATCC
+participant ":System" as Sys
+
+ATCC -> Sys: Requests compatible routes for a specific aircraft \n(provides registration number)
+Sys --> ATCC: Displays a list of compatible routes based on the aircraft's range and capacity
+
+@enduml
