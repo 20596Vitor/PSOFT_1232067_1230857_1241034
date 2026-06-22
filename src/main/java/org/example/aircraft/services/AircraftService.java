@@ -12,6 +12,8 @@ import org.example.flights.domain.Route;
 import org.example.flights.repositories.RouteRepository;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.LinkedHashMap;
 
 @Service
 public class AircraftService {
@@ -106,5 +108,29 @@ public class AircraftService {
         aircraft.setTotalOperationalHours(currentHours + additionalHours);
 
         return aircraftRepository.save(aircraft);
+    }
+
+    public Map<String, Double> getTop5UtilizedModels() {
+        List<Aircraft> fleet = aircraftRepository.findAll();
+
+        Map<String, Double> modelHours = new HashMap<>();
+        for (Aircraft aircraft : fleet) {
+            if (aircraft.getAircraftModel() != null) {
+                String modelName = aircraft.getAircraftModel().getModelName();
+                Double hours = aircraft.getTotalOperationalHours() != null ? aircraft.getTotalOperationalHours() : 0.0;
+
+                modelHours.put(modelName, modelHours.getOrDefault(modelName, 0.0) + hours);
+            }
+        }
+
+        return modelHours.entrySet().stream()
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                .limit(5)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
     }
 }

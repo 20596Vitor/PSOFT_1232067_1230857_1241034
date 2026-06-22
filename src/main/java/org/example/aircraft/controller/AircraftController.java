@@ -110,4 +110,10 @@ public class AircraftController {
             return new ResponseEntity<>(e.getMessage(), status);
         }
     }
+
+    @GetMapping("/top-utilized-models")
+    public ResponseEntity<Map<String, Double>> getTop5UtilizedModels() {
+        Map<String, Double> topModels = aircraftService.getTop5UtilizedModels();
+        return new ResponseEntity<>(topModels, HttpStatus.OK);
+    }
 }
